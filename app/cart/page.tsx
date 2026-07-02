@@ -1,0 +1,163 @@
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { useCart } from '@/components/cart/CartProvider';
+
+const gbp = (n: number) =>
+  `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+export default function CartPage() {
+  const { items, subtotal, count, setQty, remove } = useCart();
+
+  const shipping = subtotal === 0 ? 0 : subtotal >= 200 ? 0 : 9.95;
+  const total = subtotal + shipping;
+
+  if (items.length === 0) {
+    return (
+      <main className="bg-paper pt-28 md:pt-32">
+        <div className="frame flex min-h-[60vh] flex-col items-center justify-center py-section-sm text-center">
+          <p className="text-label font-medium uppercase tracking-[0.12em] text-brand-teal">Cart</p>
+          <h1 className="mt-3 text-h1 font-light tracking-tight">Your cart is empty</h1>
+          <p className="mt-4 max-w-md text-lead font-light text-muted">
+            Add a research compound before proceeding to checkout.
+          </p>
+          <Link
+            href="/#products"
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-brand px-9 py-4 text-[14px] font-medium uppercase tracking-[0.08em] text-paper transition-colors hover:bg-brand-teal"
+          >
+            Browse the catalogue →
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="bg-paper pt-28 md:pt-32">
+      <div className="frame pb-section-sm md:pb-section">
+        <nav className="flex items-center gap-2 text-[13px] text-muted">
+          <Link href="/" className="transition-colors hover:text-brand-teal">
+            Home
+          </Link>
+          <span aria-hidden>/</span>
+          <span className="text-ink">Cart</span>
+        </nav>
+        <div className="mt-6 flex items-baseline justify-between">
+          <h1 className="text-h1 font-light tracking-tight">Your cart</h1>
+          <span className="text-[14px] text-muted">
+            {count} item{count === 1 ? '' : 's'}
+          </span>
+        </div>
+
+        <div className="mt-10 grid grid-cols-1 gap-12 lg:mt-14 lg:grid-cols-12 lg:gap-16">
+          {/* Line items */}
+          <ul className="divide-y divide-line lg:col-span-7">
+            {items.map((it) => (
+              <motion.li
+                key={it.slug}
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="flex gap-5 py-6"
+              >
+                <Link
+                  href={`/products/${it.slug}`}
+                  className="relative h-24 w-24 flex-none overflow-hidden rounded-[6px] bg-mist sm:h-28 sm:w-28"
+                >
+                  <Image src={it.image} alt={it.name} fill sizes="112px" className="object-cover" />
+                </Link>
+                <div className="flex min-w-0 flex-1 flex-col justify-between">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <Link
+                        href={`/products/${it.slug}`}
+                        className="text-[16px] font-medium leading-snug transition-colors hover:text-brand-teal"
+                      >
+                        {it.name}
+                      </Link>
+                      <p className="mt-1 text-[13px] text-muted tabular-nums">{gbp(it.price)} each</p>
+                    </div>
+                    <span className="text-[16px] font-medium tabular-nums">
+                      {gbp(it.price * it.qty)}
+                    </span>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between gap-4">
+                    <div className="inline-flex items-center rounded-full border border-line">
+                      <button
+                        onClick={() => setQty(it.slug, it.qty - 1)}
+                        aria-label="Decrease quantity"
+                        className="flex h-9 w-9 items-center justify-center text-ink/60 transition-colors hover:text-ink"
+                      >
+                        −
+                      </button>
+                      <span className="w-8 text-center text-[14px] tabular-nums">{it.qty}</span>
+                      <button
+                        onClick={() => setQty(it.slug, it.qty + 1)}
+                        aria-label="Increase quantity"
+                        className="flex h-9 w-9 items-center justify-center text-ink/60 transition-colors hover:text-ink"
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => remove(it.slug)}
+                      className="text-[12px] font-medium uppercase tracking-[0.08em] text-muted transition-colors hover:text-brand"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </motion.li>
+            ))}
+          </ul>
+
+          {/* Summary */}
+          <aside className="lg:col-span-5">
+            <div className="rounded-[8px] border border-line bg-mist/40 p-6 md:p-8 lg:sticky lg:top-28">
+              <h2 className="text-[13px] font-medium uppercase tracking-[0.1em] text-ink">
+                Order summary
+              </h2>
+
+              <div className="mt-6 space-y-2 text-[14px]">
+                <div className="flex justify-between">
+                  <span className="text-muted">Subtotal</span>
+                  <span className="tabular-nums">{gbp(subtotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted">Shipping</span>
+                  <span className="tabular-nums">{shipping === 0 ? 'Free' : gbp(shipping)}</span>
+                </div>
+                <div className="flex justify-between border-t border-line pt-3 text-[18px] font-medium">
+                  <span>Total</span>
+                  <span className="tabular-nums">{gbp(total)}</span>
+                </div>
+              </div>
+
+              <Link
+                href="/checkout"
+                className="mt-8 flex h-14 w-full items-center justify-center gap-3 rounded-full bg-brand text-[14px] font-medium uppercase tracking-[0.08em] text-paper transition-colors hover:bg-brand-teal"
+              >
+                Proceed to checkout →
+              </Link>
+              <Link
+                href="/#products"
+                className="mt-3 flex h-11 w-full items-center justify-center text-[13px] font-medium uppercase tracking-[0.08em] text-brand-teal link-underline"
+              >
+                Continue browsing
+              </Link>
+
+              <p className="mt-6 text-[11px] leading-relaxed text-muted">
+                For laboratory research use only. Not for human or veterinary consumption. Orders ship
+                under validated cold-chain conditions across the UK &amp; EU.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  );
+}

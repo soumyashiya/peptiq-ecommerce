@@ -1,0 +1,532 @@
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useCart } from '@/components/cart/CartProvider';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { apiFetch, ApiError } from '@/lib/api';
+
+const gbp = (n: number) =>
+  `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+function Field({
+  name,
+  label,
+  type = 'text',
+  required,
+  autoComplete,
+  defaultValue,
+  placeholder,
+  optional,
+  className,
+}: {
+  name: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+  autoComplete?: string;
+  defaultValue?: string;
+  placeholder?: string;
+  optional?: boolean;
+  className?: string;
+}) {
+  return (
+    <label className={`block ${className ?? ''}`}>
+      <span className="mb-2 block text-[13px] text-ink">
+        {label}
+        {optional && <span className="ml-1 text-muted">(optional)</span>}
+      </span>
+      <input
+        name={name}
+        type={type}
+        required={required}
+        autoComplete={autoComplete}
+        defaultValue={defaultValue}
+        placeholder={placeholder}
+        className="h-12 w-full rounded-full border border-transparent bg-paper px-5 text-[15px] text-ink placeholder:text-muted/70 outline-none transition-all duration-200 focus:border-ink/20 focus:ring-4 focus:ring-ink/5"
+      />
+    </label>
+  );
+}
+
+type Confirmed = { orderNumber: string; total: number; email: string };
+
+type PromoResponse = { ok: boolean; valid: boolean; percent: number };
+type UserOrderResponse = {
+  success: boolean;
+  orderId: number;
+  orderNumber: string;
+};
+
+export default function CheckoutPage() {
+  const { items, subtotal, clear } = useCart();
+  const { user } = useAuth();
+
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState<Confirmed | null>(null);
+
+  const [promo, setPromo] = useState('');
+  const [promoPercent, setPromoPercent] = useState(0);
+  const [promoAppliedCode, setPromoAppliedCode] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState<string | null>(null);
+
+  const shipping = subtotal === 0 ? 0 : subtotal >= 200 ? 0 : 9.95;
+  const discount = Math.round(subtotal * (promoPercent / 100) * 100) / 100;
+  const total = Math.max(0, subtotal - discount) + shipping;
+
+  const applyPromo = async () => {
+    const code = promo.trim();
+    if (!code) return;
+    setPromoError(null);
+    setPromoLoading(true);
+    try {
+      const res = await apiFetch<PromoResponse>('/api/promos/validate', {
+        method: 'POST',
+        json: { code },
+        auth: false,
+      });
+      if (res?.valid && res.percent > 0) {
+        setPromoPercent(res.percent);
+        setPromoAppliedCode(code.toUpperCase());
+      } else {
+        setPromoPercent(0);
+        setPromoAppliedCode('');
+        setPromoError('Promo code not valid.');
+      }
+    } catch (e) {
+      const err = e as ApiError;
+      setPromoPercent(0);
+      setPromoAppliedCode('');
+      setPromoError(err.status === 404 ? 'Promo code not found.' : err.message || 'Could not validate.');
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const placeOrder = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (items.length === 0) return;
+    setSubmitError(null);
+    setSubmitting(true);
+
+    const raw = new FormData(e.currentTarget);
+    const val = (k: string) => (raw.get(k) as string | null)?.trim() ?? '';
+
+    const email = val('email');
+    const address1 = val('address');
+    const address2 = val('address2');
+    const combinedAddress = [address1, address2].filter(Boolean).join(', ');
+
+    const itemsArray = items.map((it) => ({
+      name: it.name,
+      qty: it.qty,
+      unitPrice: it.price,
+      sku: it.slug,
+    }));
+
+    const fd = new FormData();
+    fd.append('email', email);
+    fd.append('firstName', val('firstName'));
+    fd.append('lastName', val('lastName'));
+    fd.append('phone', val('phone'));
+    fd.append('address', combinedAddress);
+    fd.append('city', val('city'));
+    fd.append('postcode', val('postcode'));
+    fd.append('country', val('country') || 'United Kingdom');
+    fd.append('subtotal', String(subtotal));
+    fd.append('total', String(total));
+    fd.append('payment_method', 'manual');
+    if (promoAppliedCode) {
+      fd.append('promoCode', promoAppliedCode);
+      fd.append('promoDiscount', String(promoPercent));
+      fd.append('discountAmount', String(discount));
+    }
+    fd.append('itemsArray', JSON.stringify(itemsArray));
+
+    try {
+      const res = await apiFetch<UserOrderResponse>('/api/user-orders', {
+        method: 'POST',
+        form: fd,
+        auth: false,
+      });
+      if (!res?.orderNumber) throw new Error('Missing order number in response');
+      setConfirmed({
+        orderNumber: res.orderNumber,
+        total,
+        email,
+      });
+      clear();
+    } catch (e) {
+      const err = e as ApiError;
+      setSubmitError(err.message || 'Could not place order. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  /* ── Empty cart ── */
+  if (items.length === 0 && !confirmed) {
+    return (
+      <main className="bg-mist pt-28 md:pt-32">
+        <div className="frame flex min-h-[60vh] flex-col items-center justify-center py-section-sm text-center">
+          <h1 className="text-h2 font-light tracking-tight">Your cart is empty</h1>
+          <p className="mt-4 text-lead font-light text-muted">
+            Add a research compound before checking out.
+          </p>
+          <Link
+            href="/#products"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-9 py-4 text-[14px] font-medium uppercase tracking-[0.08em] text-paper transition-colors hover:bg-brand"
+          >
+            Browse products →
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="bg-mist pt-24 md:pt-28">
+      <div className="frame pb-section-sm md:pb-section">
+        <div className="flex items-center gap-4 text-[13px]">
+          <Link
+            href="/cart"
+            className="inline-flex items-center gap-2 text-ink transition-colors hover:text-brand-teal"
+          >
+            <span aria-hidden>←</span> Back to cart
+          </Link>
+          <span className="font-medium uppercase tracking-[0.14em] text-brand-teal">Final step</span>
+        </div>
+
+        <h1 className="mt-4 text-display font-light leading-[0.95] tracking-tight">Checkout</h1>
+
+        <form
+          onSubmit={placeOrder}
+          className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16"
+        >
+          {/* Details */}
+          <div className="lg:col-span-7">
+            {/* Contact */}
+            <section>
+              <h2 className="text-[12px] font-medium uppercase tracking-[0.14em] text-muted">
+                Contact
+              </h2>
+              <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <Field
+                  name="firstName"
+                  label="First name"
+                  required
+                  autoComplete="given-name"
+                  defaultValue={user?.name.split(' ')[0]}
+                />
+                <Field
+                  name="lastName"
+                  label="Last name"
+                  required
+                  autoComplete="family-name"
+                  defaultValue={user?.name.split(' ').slice(1).join(' ')}
+                />
+                <Field
+                  name="email"
+                  label="Email address"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  defaultValue={user?.email}
+                  className="sm:col-span-2"
+                />
+                <Field
+                  name="phone"
+                  label="Mobile"
+                  type="tel"
+                  required
+                  autoComplete="tel"
+                  placeholder="+44 7700 900000"
+                  defaultValue={user?.phone ?? undefined}
+                  className="sm:col-span-2"
+                />
+              </div>
+            </section>
+
+            {/* Shipping */}
+            <section className="mt-10">
+              <h2 className="text-[12px] font-medium uppercase tracking-[0.14em] text-muted">
+                Shipping address
+              </h2>
+              <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <Field
+                  name="address"
+                  label="Address line 1"
+                  required
+                  autoComplete="address-line1"
+                  placeholder="123 Research Park"
+                  className="sm:col-span-2"
+                />
+                <Field
+                  name="address2"
+                  label="Address line 2"
+                  optional
+                  autoComplete="address-line2"
+                  placeholder="Unit 4B"
+                  className="sm:col-span-2"
+                />
+                <Field
+                  name="city"
+                  label="City"
+                  required
+                  autoComplete="address-level2"
+                  placeholder="London"
+                />
+                <Field
+                  name="postcode"
+                  label="Postcode"
+                  required
+                  autoComplete="postal-code"
+                  placeholder="NW1 6XE"
+                />
+                <label className="block sm:col-span-2">
+                  <span className="mb-2 block text-[13px] text-ink">Country</span>
+                  <select
+                    name="country"
+                    required
+                    defaultValue={user?.country_of_residence || 'United Kingdom'}
+                    className="h-12 w-full rounded-full border border-transparent bg-paper px-5 text-[15px] text-ink outline-none transition-all duration-200 focus:border-ink/20 focus:ring-4 focus:ring-ink/5"
+                  >
+                    {[
+                      'United Kingdom',
+                      'Ireland',
+                      'Germany',
+                      'France',
+                      'Netherlands',
+                      'Spain',
+                      'Italy',
+                      'Other (EU)',
+                    ].map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </section>
+
+          </div>
+
+          {/* Order summary */}
+          <div className="lg:col-span-5">
+            <div className="rounded-[18px] bg-paper p-6 md:p-8 lg:sticky lg:top-28">
+              <h2 className="text-[12px] font-medium uppercase tracking-[0.14em] text-muted">
+                Order summary
+              </h2>
+
+              <ul className="mt-5 space-y-4">
+                {items.map((it) => (
+                  <li key={it.slug} className="flex items-center gap-4">
+                    <div className="relative h-14 w-14 flex-none overflow-hidden rounded-[8px] bg-mist">
+                      <Image
+                        src={it.image}
+                        alt={it.name}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <span className="text-[15px] font-medium leading-snug text-ink">
+                        {it.name}
+                      </span>
+                      <span className="mt-0.5 text-[12px] text-muted">
+                        Qty {it.qty}
+                      </span>
+                    </div>
+                    <span className="flex-none text-[15px] tabular-nums">
+                      {gbp(it.price * it.qty)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-6 border-t border-line pt-6">
+                {/* Promo code */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={promo}
+                    onChange={(e) => {
+                      setPromo(e.target.value);
+                      setPromoError(null);
+                    }}
+                    placeholder="Promo code"
+                    className="h-11 flex-1 rounded-full border border-transparent bg-mist/60 px-4 text-[14px] text-ink placeholder:text-muted outline-none transition-all duration-200 focus:border-ink/20 focus:ring-4 focus:ring-ink/5"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyPromo}
+                    disabled={
+                      !promo.trim() || promoLoading || promo.trim().toUpperCase() === promoAppliedCode
+                    }
+                    className="h-11 rounded-full border border-line bg-paper px-5 text-[13px] font-medium text-ink transition-colors hover:border-ink/40 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {promoLoading
+                      ? '…'
+                      : promo.trim().toUpperCase() === promoAppliedCode && promoAppliedCode
+                        ? 'Applied'
+                        : 'Apply'}
+                  </button>
+                </div>
+                {promoError && (
+                  <p className="mt-2 text-[12px] text-brand">{promoError}</p>
+                )}
+                {promoAppliedCode && (
+                  <p className="mt-2 text-[12px] text-brand-teal">
+                    <span className="font-medium">{promoAppliedCode}</span> applied — {promoPercent}% off
+                  </p>
+                )}
+
+                <dl className="mt-6 space-y-2 text-[14px]">
+                  <div className="flex justify-between">
+                    <dt className="text-muted">Subtotal</dt>
+                    <dd className="tabular-nums text-ink">{gbp(subtotal)}</dd>
+                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between">
+                      <dt className="text-muted">Discount</dt>
+                      <dd className="tabular-nums text-brand-teal">−{gbp(discount)}</dd>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <dt className="text-muted">Shipping</dt>
+                    <dd className="tabular-nums text-ink">
+                      {shipping === 0 ? 'Free' : gbp(shipping)}
+                    </dd>
+                  </div>
+                </dl>
+
+                <div className="mt-5 flex items-baseline justify-between border-t border-line pt-5">
+                  <span className="text-[17px] font-medium">Total</span>
+                  <span className="text-[22px] font-light tabular-nums">{gbp(total)}</span>
+                </div>
+              </div>
+
+              {submitError && (
+                <div className="mt-4 rounded-[8px] border border-brand/30 bg-brand/5 px-4 py-3 text-[13px] text-brand">
+                  {submitError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-ink text-[14px] font-medium text-paper transition-colors hover:bg-brand disabled:opacity-60"
+              >
+                {submitting ? 'Placing order…' : `Place order · ${gbp(total)}`}
+              </button>
+
+              <p className="mt-4 text-center text-[12px] leading-relaxed text-muted">
+                For laboratory research use only. Orders ship under validated cold-chain conditions
+                across the UK &amp; EU.
+              </p>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      {/* Order-placed modal */}
+      <AnimatePresence>
+        {confirmed && (
+          <>
+            <motion.div
+              key="scrim"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-[70] bg-ink/45 backdrop-blur-sm"
+              aria-hidden
+            />
+            <div
+              className="fixed inset-0 z-[71] flex items-center justify-center p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="order-placed-title"
+            >
+              <motion.div
+                key="dialog"
+                initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full max-w-[440px] rounded-[18px] bg-mist p-8 text-center shadow-[0_30px_80px_-30px_rgba(10,11,13,0.35)]"
+              >
+                <motion.span
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.15, type: 'spring', stiffness: 200, damping: 14 }}
+                  className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-paper text-ink"
+                >
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m5 12 5 5 9-10" />
+                  </svg>
+                </motion.span>
+
+                <h2 id="order-placed-title" className="mt-6 text-h2 font-light tracking-tight">
+                  Order placed
+                </h2>
+                <p className="mt-3 mx-auto max-w-[36ch] text-body text-muted">
+                  Thank you. A confirmation has been sent to{' '}
+                  <span className="font-medium text-ink">{confirmed.email}</span>. Tracking details
+                  will follow as soon as your order ships.
+                </p>
+
+                <div className="mt-6 flex items-center justify-between rounded-[12px] bg-paper px-5 py-4 text-left">
+                  <div>
+                    <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">
+                      Order reference
+                    </p>
+                    <p className="mt-1 text-[14px] font-medium tabular-nums">
+                      {confirmed.orderNumber}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">
+                      Total
+                    </p>
+                    <p className="mt-1 text-[15px] font-medium tabular-nums">
+                      {gbp(confirmed.total)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <Link
+                    href={`/order/${confirmed.orderNumber}`}
+                    className="flex h-12 flex-1 items-center justify-center rounded-full bg-ink text-[13px] font-medium text-paper transition-colors hover:bg-brand"
+                  >
+                    Track order
+                  </Link>
+                  <Link
+                    href="/"
+                    className="flex h-12 flex-1 items-center justify-center rounded-full border border-line bg-paper text-[13px] font-medium text-ink transition-colors hover:border-ink/40"
+                  >
+                    Back to home
+                  </Link>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}
