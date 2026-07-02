@@ -280,7 +280,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="group mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-[14px] font-medium text-paper transition-all duration-200 hover:bg-brand disabled:opacity-60"
+                className="group mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand text-[14px] font-medium text-paper transition-all duration-200 hover:bg-brand-teal disabled:opacity-60"
               >
                 {submitting ? 'Signing in…' : 'Sign in'}
                 {!submitting && (
