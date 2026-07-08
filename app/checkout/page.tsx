@@ -123,34 +123,37 @@ export default function CheckoutPage() {
 
     const itemsArray = items.map((it) => ({
       name: it.name,
-      qty: it.qty,
+      quantity: it.qty,
       unitPrice: it.price,
       sku: it.slug,
     }));
 
-    const fd = new FormData();
-    fd.append('email', email);
-    fd.append('firstName', val('firstName'));
-    fd.append('lastName', val('lastName'));
-    fd.append('phone', val('phone'));
-    fd.append('address', combinedAddress);
-    fd.append('city', val('city'));
-    fd.append('postcode', val('postcode'));
-    fd.append('country', val('country') || 'United Kingdom');
-    fd.append('subtotal', String(subtotal));
-    fd.append('total', String(total));
-    fd.append('payment_method', 'manual');
-    if (promoAppliedCode) {
-      fd.append('promoCode', promoAppliedCode);
-      fd.append('promoDiscount', String(promoPercent));
-      fd.append('discountAmount', String(discount));
-    }
-    fd.append('itemsArray', JSON.stringify(itemsArray));
+    const firstName = val('firstName');
+    const lastName = val('lastName');
+
+    const body = {
+      email,
+      customerName: [firstName, lastName].filter(Boolean).join(' '),
+      firstName,
+      lastName,
+      phone: val('phone'),
+      address: combinedAddress,
+      city: val('city'),
+      postcode: val('postcode'),
+      country: val('country') || 'United Kingdom',
+      itemsArray,
+      subtotal,
+      discountAmount: discount,
+      total,
+      promoCode: promoAppliedCode || null,
+      promoDiscount: promoAppliedCode ? promoPercent : 0,
+      payment_method: 'manual' as const,
+    };
 
     try {
       const res = await apiFetch<UserOrderResponse>('/api/user-orders', {
         method: 'POST',
-        form: fd,
+        json: body,
         auth: false,
       });
       if (!res?.orderNumber) throw new Error('Missing order number in response');
