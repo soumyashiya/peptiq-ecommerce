@@ -54,10 +54,29 @@ function Field({
 type Confirmed = { orderNumber: string; total: number; email: string };
 
 type PromoResponse = { ok: boolean; valid: boolean; percent: number };
+type ConfirmedOrderItem = {
+  name: string;
+  sku: string | null;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+};
 type UserOrderResponse = {
   success: boolean;
   orderId: number;
   orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  phone: string;
+  shippingAddress: string;
+  shippingCity: string;
+  shippingPostcode: string;
+  shippingCountry: string;
+  currency: string;
+  subtotal: number;
+  discountAmount: number;
+  total: number;
+  items: ConfirmedOrderItem[];
 };
 
 export default function CheckoutPage() {
@@ -157,10 +176,40 @@ export default function CheckoutPage() {
         auth: false,
       });
       if (!res?.orderNumber) throw new Error('Missing order number in response');
+
+      // Fires the shared-email order confirmation using the order details
+      // the backend echoes back — not the raw form fields — so the email
+      // always reflects what was actually persisted. Best-effort: a failure
+      // here must never surface as a checkout error.
+      fetch('/api/send-order-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer: { name: res.customerName, email: res.customerEmail },
+          order: {
+            orderNumber: res.orderNumber,
+            currency: res.currency,
+            items: res.items.map((it) => ({
+              name: it.name,
+              quantity: it.quantity,
+              price: it.unitPrice,
+            })),
+            subtotal: res.subtotal,
+            shipping,
+            tax: 0,
+            discount: res.discountAmount,
+            total: res.total,
+            shippingAddress: [res.shippingAddress, res.shippingCity, res.shippingPostcode, res.shippingCountry]
+              .filter(Boolean)
+              .join(', '),
+          },
+        }),
+      }).catch((err) => console.error('[checkout] order confirmation email failed:', err));
+
       setConfirmed({
         orderNumber: res.orderNumber,
-        total,
-        email,
+        total: res.total,
+        email: res.customerEmail,
       });
       clear();
     } catch (e) {

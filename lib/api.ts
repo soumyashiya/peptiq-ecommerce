@@ -3,7 +3,9 @@
  * Base URL and endpoint contracts: see API_DOCUMENTATION.md.
  */
 
-export const API_BASE = 'https://www.microservices.tech';
+export const API_BASE =
+  'https://www.microservices.tech';
+  // 'http://localhost:5003';
 const TOKEN_KEY = 'peptiq-token';
 
 /* ── JWT storage ─────────────────────────────────────────────────────────── */
