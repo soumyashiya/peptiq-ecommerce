@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useCart } from '@/components/cart/CartProvider';
 
-const gbp = (n: number) =>
-  `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const usd = (n: number) =>
+  `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export default function CartPage() {
   const { items, subtotal, count, setQty, remove } = useCart();
@@ -79,10 +79,10 @@ export default function CartPage() {
                       >
                         {it.name}
                       </Link>
-                      <p className="mt-1 text-[13px] text-muted tabular-nums">{gbp(it.price)} each</p>
+                      <p className="mt-1 text-[13px] text-muted tabular-nums">{usd(it.price)} each</p>
                     </div>
                     <span className="text-[16px] font-medium tabular-nums">
-                      {gbp(it.price * it.qty)}
+                      {usd(it.price * it.qty)}
                     </span>
                   </div>
                   <div className="mt-4 flex items-center justify-between gap-4">
@@ -125,15 +125,15 @@ export default function CartPage() {
               <div className="mt-6 space-y-2 text-[14px]">
                 <div className="flex justify-between">
                   <span className="text-muted">Subtotal</span>
-                  <span className="tabular-nums">{gbp(subtotal)}</span>
+                  <span className="tabular-nums">{usd(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Shipping</span>
-                  <span className="tabular-nums">{shipping === 0 ? 'Free' : gbp(shipping)}</span>
+                  <span className="tabular-nums">{shipping === 0 ? 'Free' : usd(shipping)}</span>
                 </div>
                 <div className="flex justify-between border-t border-line pt-3 text-[18px] font-medium">
                   <span>Total</span>
-                  <span className="tabular-nums">{gbp(total)}</span>
+                  <span className="tabular-nums">{usd(total)}</span>
                 </div>
               </div>
 

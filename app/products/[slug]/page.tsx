@@ -38,7 +38,7 @@ export function generateMetadata({ params }: Params): Metadata {
   };
 }
 
-const gbp = (n: number) => `£${n.toLocaleString('en-GB')}`;
+const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
 
 export default function ProductPage({ params }: Params) {
   const product = getProduct(params.slug);
@@ -60,7 +60,7 @@ export default function ProductPage({ params }: Params) {
         offers: {
           '@type': 'Offer',
           url: `${SITE_URL}/products/${product.slug}`,
-          priceCurrency: 'GBP',
+          priceCurrency: 'USD',
           price: product.price,
           availability: 'https://schema.org/InStock',
           seller: { '@type': 'Organization', name: brand.name },
@@ -120,9 +120,9 @@ export default function ProductPage({ params }: Params) {
 
             <div className="mt-6 flex items-baseline gap-3">
               <span className="text-[2.5rem] font-light leading-none tracking-tight text-brand">
-                {gbp(product.price)}
+                {usd(product.price)}
               </span>
-              <span className="text-[13px] uppercase tracking-[0.08em] text-muted">GBP</span>
+              <span className="text-[13px] uppercase tracking-[0.08em] text-muted">USD</span>
             </div>
 
             {/* Specs */}
@@ -200,7 +200,7 @@ export default function ProductPage({ params }: Params) {
                     </h3>
                     <p className="mt-2 text-[15px] text-muted">{r.blurb}</p>
                   </div>
-                  <span className="mt-1 flex-none text-[18px] font-light text-brand">{gbp(r.price)}</span>
+                  <span className="mt-1 flex-none text-[18px] font-light text-brand">{usd(r.price)}</span>
                 </div>
               </Link>
             ))}

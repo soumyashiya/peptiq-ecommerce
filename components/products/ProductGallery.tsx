@@ -35,8 +35,8 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
                 onClick={() => setActive(i)}
                 onMouseEnter={() => setActive(i)}
                 aria-label={`View image ${i + 1}`}
-                aria-current={isActive}
-                className={`relative h-32 w-32 flex-none overflow-hidden rounded-[6px] outline-none transition-all duration-300 sm:h-36 sm:w-36 ${
+                aria-current={isActive ? 'true' : undefined}
+                className={`relative h-32 w-32 flex-none overflow-hidden rounded-[6px] outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:h-36 sm:w-36 ${
                   isActive ? 'ring-1 ring-brand-sky' : 'opacity-60 hover:opacity-100'
                 }`}
               >

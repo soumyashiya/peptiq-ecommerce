@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch, ApiError } from '@/lib/api';
 
-const gbp = (n: number) =>
-  `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const usd = (n: number) =>
+  `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const num = (v: unknown): number => {
   if (typeof v === 'number') return v;
@@ -180,7 +180,7 @@ export default function OrderPage() {
             <div className="text-left sm:text-right">
               <p className="text-[12px] uppercase tracking-[0.1em] text-muted">Order total</p>
               <p className="mt-1 text-[clamp(1.75rem,4.5vw,3rem)] font-light tabular-nums">
-                {gbp(total)}
+                {usd(total)}
               </p>
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function OrderPage() {
                       <p className="mt-0.5 text-[13px] text-muted">Qty {qty}</p>
                     </div>
                     <span className="flex-none text-[15px] tabular-nums">
-                      {gbp(price * qty)}
+                      {usd(price * qty)}
                     </span>
                   </li>
                 );
@@ -223,23 +223,23 @@ export default function OrderPage() {
             <div className="mt-6 space-y-2 border-t border-line pt-6 text-[14px]">
               <div className="flex justify-between">
                 <span className="text-muted">Subtotal</span>
-                <span className="tabular-nums">{gbp(subtotal)}</span>
+                <span className="tabular-nums">{usd(subtotal)}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between">
                   <span className="text-muted">Discount</span>
-                  <span className="tabular-nums text-brand-teal">−{gbp(discount)}</span>
+                  <span className="tabular-nums text-brand-teal">−{usd(discount)}</span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span className="text-muted">Shipping</span>
                 <span className="tabular-nums">
-                  {shipping === 0 ? 'Free' : gbp(shipping)}
+                  {shipping === 0 ? 'Free' : usd(shipping)}
                 </span>
               </div>
               <div className="flex justify-between border-t border-line pt-3 text-[18px] font-medium">
                 <span>Total</span>
-                <span className="tabular-nums">{gbp(total)}</span>
+                <span className="tabular-nums">{usd(total)}</span>
               </div>
             </div>
           </section>

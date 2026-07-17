@@ -4,38 +4,45 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCart } from './CartProvider';
+import { useModal } from '@/components/ui/useModal';
 
-const gbp = (n: number) => `£${n.toLocaleString('en-GB')}`;
+const usd = (n: number) => `$${n.toLocaleString('en-US')}`;
 
 export function CartDrawer() {
   const { items, subtotal, count, isOpen, closeCart, setQty, remove } = useCart();
+  const panelRef = useModal<HTMLElement>(isOpen, closeCart);
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* scrim */}
+          {/* scrim — decorative; Escape and the close button are the accessible paths out */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={closeCart}
+            aria-hidden="true"
             className="fixed inset-0 z-[60] bg-ink/40 backdrop-blur-sm"
           />
 
           {/* panel */}
           <motion.aside
+            ref={panelRef}
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-y-0 right-0 z-[61] flex w-full max-w-[440px] flex-col bg-paper shadow-2xl"
-            aria-label="Shopping cart"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cart-drawer-title"
+            tabIndex={-1}
           >
             {/* header */}
             <div className="flex items-center justify-between border-b border-line px-6 py-5">
-              <h2 className="text-[15px] font-medium uppercase tracking-[0.1em]">
+              <h2 id="cart-drawer-title" className="text-[15px] font-medium uppercase tracking-[0.1em]">
                 Cart <span className="text-muted">({count})</span>
               </h2>
               <button
@@ -106,7 +113,7 @@ export function CartDrawer() {
                           </button>
                         </div>
                         <span className="text-[15px] font-medium tabular-nums">
-                          {gbp(it.price * it.qty)}
+                          {usd(it.price * it.qty)}
                         </span>
                       </div>
                     </div>
@@ -120,7 +127,7 @@ export function CartDrawer() {
               <div className="border-t border-line px-6 py-6">
                 <div className="flex items-center justify-between text-[16px]">
                   <span className="text-muted">Subtotal</span>
-                  <span className="font-medium tabular-nums">{gbp(subtotal)}</span>
+                  <span className="font-medium tabular-nums">{usd(subtotal)}</span>
                 </div>
                 <p className="mt-1.5 text-[12px] text-muted">
                   Shipping &amp; taxes calculated at checkout.

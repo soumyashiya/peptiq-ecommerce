@@ -13,6 +13,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const router = useRouter();
   const isHome = pathname === '/';
@@ -45,6 +46,24 @@ export function Header() {
       document.removeEventListener('keydown', onKey);
     };
   }, [accountOpen]);
+
+  // The burger panel is a disclosure, not a modal — Escape closes it and returns
+  // focus to the burger, but it deliberately doesn't trap focus or lock scroll.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setOpen(false);
+      burgerRef.current?.focus();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
+
+  // Never leave the panel open behind a route change.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   const solid = scrolled || !isHome;
   const linkHref = (href: string) => (isHome ? href : `/${href.replace(/^#/, '#')}`.replace('//', '/'));
@@ -205,8 +224,11 @@ export function Header() {
 
           {/* Burger */}
           <button
+            ref={burgerRef}
             onClick={() => setOpen((v) => !v)}
-            aria-label="Menu"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
             className="relative flex h-10 w-10 flex-col items-center justify-center gap-[5px] lg:hidden"
           >
             <span className={`h-[1.5px] w-6 bg-ink transition-all duration-300 ${open ? 'translate-y-[6.5px] rotate-45' : ''}`} />
@@ -223,6 +245,8 @@ export function Header() {
       <AnimatePresence>
         {open && (
           <motion.nav
+            id="mobile-menu"
+            aria-label="Mobile"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}

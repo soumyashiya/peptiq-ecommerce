@@ -40,8 +40,7 @@ export const hero = {
   footerLeft: 'ADVANCING DISCOVERY',
   footerRight: 'THROUGH PEPTIQ RESEARCH',
   // Floating lab/research render on a blue gradient.
-  image:
-    'https://images.unsplash.com/photo-1581093588401-fbb62a02f120?q=80&w=2400&auto=format&fit=crop',
+  image: '/images/hero-new1.webp',
 };
 
 export const story = {
@@ -60,9 +59,8 @@ export const story = {
     { value: '26.3k+', label: 'R&D-tested research units' },
     { value: '99.95%', label: 'Lab-tested purity' },
   ],
-  image: '/images/lab-new.avif',
-  image2:
-    'https://images.unsplash.com/photo-1628595351029-c2bf17511435?q=80&w=1400&auto=format&fit=crop',
+  image: '/images/about-big.webp',
+  image2: '/images/about-small.webp',
 };
 
 export const stats = {
@@ -84,12 +82,9 @@ export const sustainability = {
     'Peptiq randomly selects a batch of pens from thousands to be sent to Janoshik — a globally recognised laboratory — for fully independent verification. Cold-chain handling, ISO-certified filling, and tamper-evident labelling protect every research unit from synthesis to dispatch.',
   cta: { label: 'View Janoshik report', href: '#innovation' },
   // The centre media that zooms from a small window to full-screen on scroll.
-  video:
-    'https://videos.pexels.com/video-files/4121620/4121620-uhd_2560_1440_25fps.mp4',
-  poster:
-    'https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=2200&auto=format&fit=crop',
-  image:
-    'https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=2200&auto=format&fit=crop',
+  video: '/images/video-new.mp4',
+  poster: '/images/lab-new1.avif',
+  image: '/images/lab-new1.avif',
 };
 
 export const products = {
@@ -120,6 +115,28 @@ export const products = {
         { label: 'Purity', value: '99.27%' },
         { label: 'Batch', value: 'AR1739JAT' },
         { label: 'Stability', value: '56-day room temp' },
+      ],
+    },
+    {
+      slug: 'retatrutide-20mg',
+      name: 'Retatrutide 20mg',
+      price: 100,
+      blurb: '2.4 mL pre-filled research pen',
+      desc: '99.21% purity, batch AR1721TRT. 20mg pre-filled research pen.',
+      image: '/images/products/retatrutide-20mg/front.jpg',
+      gallery: [
+        '/images/products/retatrutide-20mg/front.jpg',
+        '/images/products/retatrutide-20mg/pen.jpg',
+        '/images/products/retatrutide-20mg/open.jpg',
+        '/images/products/retatrutide-20mg/uv.jpg',
+      ],
+      longDesc:
+        '20mg Retatrutide formulation supplied in a pre-filled research device for controlled laboratory R&D, Janoshik third-party verified with a per-batch COA. Research use only — not for human or veterinary consumption.',
+      specs: [
+        { label: 'Format', value: '2.4 mL pre-filled pen' },
+        { label: 'Purity', value: '99.21%' },
+        { label: 'Batch', value: 'AR1721TRT' },
+        { label: 'Content', value: '22.96 mg verified' },
       ],
     },
     {
@@ -229,19 +246,19 @@ export const services = {
       title: 'Independent Lab Testing',
       desc:
         'Every batch is independently verified by Janoshik Analytical. Random pens are pulled from production runs, sealed, and shipped for blind third-party analysis. Certificates of Analysis are published per batch — purity, concentration, and verified content.',
-      image: '/images/independent-lab-test.png',
+      image: '/images/independent-lab-test.webp',
     },
     {
       title: 'Cold-Chain Logistics',
       desc:
         'Validated cold-chain packaging keeps compounds stable and compliant during sensitive laboratory delivery. Tracked and signed-for via UPS, Royal Mail and DPD across the UK and EU. Pre-3pm UK orders ship the same working day.',
-      image: '/images/cold-chain.png',
+      image: '/images/cold-chain-seo.webp',
     },
     {
       title: 'Wholesale & Supply',
       desc:
         'Three tiered wholesale programmes — 50–100, 100–1,000, and 1,000+ pens — with volume pricing, scheduled delivery, and dedicated support. Consistent stock, clear pricing, full batch documentation for every shipment.',
-      image: '/images/wholesale-supply.avif',
+      image: '/images/wholesale-seo.webp',
     },
   ],
 };
@@ -297,40 +314,35 @@ export const gallery = {
       title: 'API Synthesis',
       caption:
         'Compounds produced in-house under ISO 9001:2015 in a controlled clean-room environment.',
-      image:
-        'https://images.unsplash.com/photo-1576671081837-49000212a370?q=80&w=1800&auto=format&fit=crop',
+      image: '/images/api-seo.webp',
     },
     {
       tag: 'STAGE 02',
       title: 'Purification',
       caption:
         'Chromatographic purification and assay — every batch reaches 99%+ before it advances.',
-      image:
-        'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=80&w=1800&auto=format&fit=crop',
+      image: '/images/purification-seo.webp',
     },
     {
       tag: 'STAGE 03',
       title: 'Independent QC',
       caption:
         'Random pens are pulled and shipped blind to Janoshik Analytical for third-party verification.',
-      image:
-        'https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=1800&auto=format&fit=crop',
+      image: '/images/independen-seo.webp',
     },
     {
       tag: 'STAGE 04',
       title: 'Sterile Filling',
       caption:
         'Tamper-evident, batch-coded filling of pre-filled research pens for fully traceable supply.',
-      image:
-        'https://images.unsplash.com/photo-1614935151651-0bea6508db6b?q=80&w=1800&auto=format&fit=crop',
+      image: '/images/filling.webp',
     },
     {
       tag: 'STAGE 05',
       title: 'Cold-Chain Dispatch',
       caption:
         'Validated cold-chain packaging, tracked and signed-for across the UK and EU.',
-      image:
-        'https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1800&auto=format&fit=crop',
+      image: '/images/cold-chain-seo.webp',
     },
   ],
 };
@@ -352,8 +364,7 @@ export const news = {
       org: 'United Kingdom',
       rating: 5,
       tag: 'Verified purchase',
-      avatar:
-        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop',
+      avatar: '/images/review1-seo.webp',
     },
     {
       quote:
@@ -363,8 +374,7 @@ export const news = {
       org: 'Research lab · EU',
       rating: 5,
       tag: 'Repeat customer',
-      avatar:
-        'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=400&auto=format&fit=crop',
+      avatar: '/images/review2-seo.webp',
     },
     {
       quote:
@@ -374,8 +384,7 @@ export const news = {
       org: 'Germany',
       rating: 5,
       tag: 'Verified purchase',
-      avatar:
-        'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?q=80&w=400&auto=format&fit=crop',
+      avatar: '/images/review3-seo.webp',
     },
     {
       quote:
@@ -385,8 +394,7 @@ export const news = {
       org: 'United Kingdom',
       rating: 5,
       tag: 'Verified purchase',
-      avatar:
-        'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=400&auto=format&fit=crop',
+      avatar: '/images/review4-seo.webp',
     },
   ],
 };

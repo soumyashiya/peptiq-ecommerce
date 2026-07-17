@@ -175,12 +175,15 @@ export default function RegisterPage() {
           {/* ── Left: light brand panel ── */}
           <aside className="relative hidden flex-col justify-between overflow-hidden bg-mist p-8 lg:flex xl:p-10">
             {/* full-cover background image */}
+            {/*
+              No `priority`: it emits a preload regardless of media, so phones were
+              fetching this decorative 1.2 MB panel that only renders at lg and up.
+            */}
             <Image
               src="/images/peptide-glass.png"
               alt=""
               aria-hidden
               fill
-              priority
               sizes="(max-width: 1024px) 0px, 45vw"
               className="pointer-events-none select-none object-cover"
               draggable={false}
@@ -392,6 +395,7 @@ export default function RegisterPage() {
 
               {error && (
                 <motion.div
+                  role="alert"
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="rounded-[10px] border border-brand/30 bg-brand/5 px-4 py-3 text-[13px] text-brand"

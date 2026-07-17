@@ -62,8 +62,9 @@ export function NewsletterForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@lab.com"
+          aria-label="Email address for newsletter"
           disabled={state.kind === 'submitting' || state.kind === 'success'}
-          className="h-10 flex-1 rounded-full border border-paper/15 bg-paper/5 px-4 text-[13px] text-paper placeholder:text-paper/40 outline-none transition-colors focus:border-brand-sky focus:bg-paper/10 disabled:opacity-50"
+          className="h-10 flex-1 rounded-full border border-paper/15 bg-paper/5 px-4 text-[13px] text-paper placeholder:text-paper/40 outline-none transition-colors focus:border-brand-sky focus:bg-paper/10 focus-visible:ring-2 focus-visible:ring-brand-sky disabled:opacity-50"
         />
         <button
           type="submit"
@@ -97,10 +98,14 @@ export function NewsletterForm() {
       />
 
       {state.kind === 'success' && (
-        <p className="mt-3 text-[12px] text-brand-sky">{state.message}</p>
+        <p role="status" className="mt-3 text-[12px] text-brand-sky">
+          {state.message}
+        </p>
       )}
       {state.kind === 'error' && (
-        <p className="mt-3 text-[12px] text-brand">{state.message}</p>
+        <p role="alert" className="mt-3 text-[12px] text-brand">
+          {state.message}
+        </p>
       )}
     </form>
   );

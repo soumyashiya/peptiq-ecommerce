@@ -27,17 +27,21 @@ const nextConfig = {
     remotePatterns: [{ protocol: 'https', hostname: 'images.unsplash.com' }],
   },
   experimental: {
-    // Tree-shake the barrel imports of our heaviest client dependency.
-    optimizePackageImports: ['framer-motion'],
+    // Tree-shake the barrel imports of our heaviest client dependencies.
+    optimizePackageImports: ['framer-motion', 'gsap'],
   },
   async headers() {
     return [
       { source: '/:path*', headers: securityHeaders },
       {
-        // Fingerprinted static assets — cache hard.
+        // These filenames are NOT content-hashed, so `immutable` would pin a stale
+        // image for a year after any replacement. Revalidate instead.
         source: '/images/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
         ],
       },
     ];

@@ -49,8 +49,7 @@ export default function LoginPage() {
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.18] mix-blend-luminosity"
             style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=1600&q=80')",
+              backgroundImage: "url('/images/lab-new.avif')",
             }}
           />
           {/* darken/tint overlay for legibility */}
@@ -212,15 +211,7 @@ export default function LoginPage() {
               </label>
 
               <label className="block">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-[13px] font-medium text-ink">Password</span>
-                  <button
-                    type="button"
-                    className="text-[12px] font-medium text-brand-teal transition-colors hover:text-brand"
-                  >
-                    Forgot?
-                  </button>
-                </div>
+                <span className="mb-2 block text-[13px] font-medium text-ink">Password</span>
                 <div className="group relative">
                   <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">
                     <svg
@@ -255,6 +246,14 @@ export default function LoginPage() {
                     {showPw ? 'Hide' : 'Show'}
                   </button>
                 </div>
+                <div className="mt-2 flex justify-end">
+                  <Link
+                    href="/forgot-password"
+                    className="text-[12px] font-medium text-brand-teal transition-colors hover:text-brand"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
               </label>
 
               <label className="flex cursor-pointer items-center gap-2.5 text-[13px] text-muted">
@@ -269,6 +268,7 @@ export default function LoginPage() {
 
               {error && (
                 <motion.div
+                  role="alert"
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="rounded-[8px] border border-brand/30 bg-brand/5 px-4 py-3 text-[13px] text-brand"

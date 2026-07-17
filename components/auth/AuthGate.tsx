@@ -4,8 +4,18 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 import { useAuth } from './AuthProvider';
 
-/** Routes that can be reached without a session. */
-const PUBLIC_ROUTES = ['/login', '/register'];
+/**
+ * Routes that can be reached without a session.
+ * Exact matches for standalone pages; prefixes (ending in `/`) for
+ * dynamic sections like `/products/[slug]` or `/policies/[slug]`.
+ */
+const PUBLIC_EXACT = ['/', '/login', '/register', '/forgot-password', '/cart', '/checkout', '/track-order'];
+const PUBLIC_PREFIXES = ['/products/', '/policies/', '/checkout/', '/order/'];
+
+function isPublicPath(pathname: string) {
+  if (PUBLIC_EXACT.includes(pathname)) return true;
+  return PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
+}
 
 /**
  * Redirects unauthenticated visitors to /login before any children render.
@@ -17,7 +27,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { user, hydrated } = useAuth();
 
-  const isPublic = PUBLIC_ROUTES.includes(pathname);
+  const isPublic = isPublicPath(pathname);
   const showChildren = isPublic || (hydrated && !!user);
 
   useEffect(() => {

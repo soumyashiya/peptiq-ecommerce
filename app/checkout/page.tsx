@@ -7,9 +7,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCart } from '@/components/cart/CartProvider';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { apiFetch, ApiError } from '@/lib/api';
+import { useModal } from '@/components/ui/useModal';
 
-const gbp = (n: number) =>
-  `£${n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const NOOP = () => {};
+
+const usd = (n: number) =>
+  `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 function Field({
   name,
@@ -92,6 +95,10 @@ export default function CheckoutPage() {
   const [promoAppliedCode, setPromoAppliedCode] = useState('');
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState<string | null>(null);
+
+  // The order is already placed by the time this dialog shows, so there is nothing
+  // to dismiss — no-op the close and use the hook purely for focus + scroll lock.
+  const confirmRef = useModal<HTMLDivElement>(Boolean(confirmed), NOOP);
 
   const shipping = subtotal === 0 ? 0 : subtotal >= 200 ? 0 : 9.95;
   const discount = Math.round(subtotal * (promoPercent / 100) * 100) / 100;
@@ -394,7 +401,7 @@ export default function CheckoutPage() {
                       </span>
                     </div>
                     <span className="flex-none text-[15px] tabular-nums">
-                      {gbp(it.price * it.qty)}
+                      {usd(it.price * it.qty)}
                     </span>
                   </li>
                 ))}
@@ -411,6 +418,9 @@ export default function CheckoutPage() {
                       setPromoError(null);
                     }}
                     placeholder="Promo code"
+                    aria-label="Promo code"
+                    aria-invalid={promoError ? true : undefined}
+                    aria-describedby={promoError ? 'promo-error' : undefined}
                     className="h-11 flex-1 rounded-full border border-transparent bg-mist/60 px-4 text-[14px] text-ink placeholder:text-muted outline-none transition-all duration-200 focus:border-ink/20 focus:ring-4 focus:ring-ink/5"
                   />
                   <button
@@ -429,7 +439,9 @@ export default function CheckoutPage() {
                   </button>
                 </div>
                 {promoError && (
-                  <p className="mt-2 text-[12px] text-brand">{promoError}</p>
+                  <p id="promo-error" role="alert" className="mt-2 text-[12px] text-brand">
+                    {promoError}
+                  </p>
                 )}
                 {promoAppliedCode && (
                   <p className="mt-2 text-[12px] text-brand-teal">
@@ -440,25 +452,25 @@ export default function CheckoutPage() {
                 <dl className="mt-6 space-y-2 text-[14px]">
                   <div className="flex justify-between">
                     <dt className="text-muted">Subtotal</dt>
-                    <dd className="tabular-nums text-ink">{gbp(subtotal)}</dd>
+                    <dd className="tabular-nums text-ink">{usd(subtotal)}</dd>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between">
                       <dt className="text-muted">Discount</dt>
-                      <dd className="tabular-nums text-brand-teal">−{gbp(discount)}</dd>
+                      <dd className="tabular-nums text-brand-teal">−{usd(discount)}</dd>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <dt className="text-muted">Shipping</dt>
                     <dd className="tabular-nums text-ink">
-                      {shipping === 0 ? 'Free' : gbp(shipping)}
+                      {shipping === 0 ? 'Free' : usd(shipping)}
                     </dd>
                   </div>
                 </dl>
 
                 <div className="mt-5 flex items-baseline justify-between border-t border-line pt-5">
                   <span className="text-[17px] font-medium">Total</span>
-                  <span className="text-[22px] font-light tabular-nums">{gbp(total)}</span>
+                  <span className="text-[22px] font-light tabular-nums">{usd(total)}</span>
                 </div>
               </div>
 
@@ -473,7 +485,7 @@ export default function CheckoutPage() {
                 disabled={submitting}
                 className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-ink text-[14px] font-medium text-paper transition-colors hover:bg-brand disabled:opacity-60"
               >
-                {submitting ? 'Placing order…' : `Place order · ${gbp(total)}`}
+                {submitting ? 'Placing order…' : `Place order · ${usd(total)}`}
               </button>
 
               <p className="mt-4 text-center text-[12px] leading-relaxed text-muted">
@@ -499,10 +511,12 @@ export default function CheckoutPage() {
               aria-hidden
             />
             <div
+              ref={confirmRef}
               className="fixed inset-0 z-[71] flex items-center justify-center p-4"
               role="dialog"
               aria-modal="true"
               aria-labelledby="order-placed-title"
+              tabIndex={-1}
             >
               <motion.div
                 key="dialog"
@@ -555,7 +569,7 @@ export default function CheckoutPage() {
                       Total
                     </p>
                     <p className="mt-1 text-[15px] font-medium tabular-nums">
-                      {gbp(confirmed.total)}
+                      {usd(confirmed.total)}
                     </p>
                   </div>
                 </div>

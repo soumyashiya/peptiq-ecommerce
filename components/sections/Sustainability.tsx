@@ -19,6 +19,32 @@ export function Sustainability() {
   const media = useRef<HTMLDivElement>(null);
   const intro = useRef<HTMLDivElement>(null);
   const caption = useRef<HTMLDivElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
+
+  // This section sits ~3 screens down, so the 2 MB source is fetched on approach
+  // rather than during load, where `preload="auto"` competed with the hero LCP.
+  // The poster still paints immediately, so the clip-path reveal looks unchanged.
+  useEffect(() => {
+    const el = video.current;
+    if (!el) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.preload = 'auto';
+          void el.play().catch(() => {
+            /* autoplay refused — poster remains, which is an acceptable fallback */
+          });
+        } else {
+          el.pause();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -76,10 +102,11 @@ export function Sustainability() {
       {/* Full-bleed media, revealed by an expanding clip window */}
       <div ref={media} className="absolute inset-0 h-full w-full will-change-[clip-path]">
         <video
+          ref={video}
           className="h-full w-full object-cover"
           src={s.video}
           poster={s.poster}
-          autoPlay
+          preload="none"
           muted
           loop
           playsInline
