@@ -130,7 +130,7 @@ export function CartDrawer() {
                   <span className="font-medium tabular-nums">{usd(subtotal)}</span>
                 </div>
                 <p className="mt-1.5 text-[12px] text-muted">
-                  Shipping &amp; taxes calculated at checkout.
+                  Totals calculated at checkout.
                 </p>
                 <Link
                   href="/checkout"

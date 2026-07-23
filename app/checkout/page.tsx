@@ -8,6 +8,7 @@ import { useCart } from '@/components/cart/CartProvider';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { apiFetch, ApiError } from '@/lib/api';
 import { useModal } from '@/components/ui/useModal';
+import { compliance } from '@/lib/content';
 
 const NOOP = () => {};
 
@@ -100,7 +101,9 @@ export default function CheckoutPage() {
   // to dismiss — no-op the close and use the hook purely for focus + scroll lock.
   const confirmRef = useModal<HTMLDivElement>(Boolean(confirmed), NOOP);
 
-  const shipping = subtotal === 0 ? 0 : subtotal >= 200 ? 0 : 9.95;
+  // Shipping is not currently offered. Kept as a variable so the total logic
+  // continues to compose cleanly if fulfilment is re-introduced later.
+  const shipping = 0;
   const discount = Math.round(subtotal * (promoPercent / 100) * 100) / 100;
   const total = Math.max(0, subtotal - discount) + shipping;
 
@@ -234,7 +237,8 @@ export default function CheckoutPage() {
         <div className="frame flex min-h-[60vh] flex-col items-center justify-center py-section-sm text-center">
           <h1 className="text-h2 font-light tracking-tight">Your cart is empty</h1>
           <p className="mt-4 text-lead font-light text-muted">
-            Add a research compound before checking out.
+            Add a research compound before checking out. Products are supplied strictly for
+            laboratory research — not for human or veterinary use.
           </p>
           <Link
             href="/#products"
@@ -310,10 +314,10 @@ export default function CheckoutPage() {
               </div>
             </section>
 
-            {/* Shipping */}
+            {/* Contact address */}
             <section className="mt-10">
               <h2 className="text-[12px] font-medium uppercase tracking-[0.14em] text-muted">
-                Shipping address
+                Contact address
               </h2>
               <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <Field
@@ -460,12 +464,6 @@ export default function CheckoutPage() {
                       <dd className="tabular-nums text-brand-teal">−{usd(discount)}</dd>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <dt className="text-muted">Shipping</dt>
-                    <dd className="tabular-nums text-ink">
-                      {shipping === 0 ? 'Free' : usd(shipping)}
-                    </dd>
-                  </div>
                 </dl>
 
                 <div className="mt-5 flex items-baseline justify-between border-t border-line pt-5">
@@ -480,18 +478,27 @@ export default function CheckoutPage() {
                 </div>
               )}
 
+              {/* Mandatory research-use acknowledgement — shown above the place-order
+                  action so it is unambiguously part of the customer's consent. */}
+              <div
+                role="note"
+                aria-label="Research-use acknowledgement"
+                className="mt-6 space-y-2 rounded-[10px] border border-line bg-mist/60 p-4 text-[12px] leading-relaxed text-muted"
+              >
+                <p>
+                  <span className="font-medium text-ink">Research-use acknowledgement.</span>{' '}
+                  {compliance.checkoutAcknowledgement}
+                </p>
+                <p>{compliance.checkoutMedical}</p>
+              </div>
+
               <button
                 type="submit"
                 disabled={submitting}
-                className="mt-6 flex h-14 w-full items-center justify-center rounded-full bg-ink text-[14px] font-medium text-paper transition-colors hover:bg-brand disabled:opacity-60"
+                className="mt-4 flex h-14 w-full items-center justify-center rounded-full bg-ink text-[14px] font-medium text-paper transition-colors hover:bg-brand disabled:opacity-60"
               >
                 {submitting ? 'Placing order…' : `Place order · ${usd(total)}`}
               </button>
-
-              <p className="mt-4 text-center text-[12px] leading-relaxed text-muted">
-                For laboratory research use only. Orders ship under validated cold-chain conditions
-                across the UK &amp; EU.
-              </p>
             </div>
           </div>
         </form>
@@ -551,8 +558,8 @@ export default function CheckoutPage() {
                 </h2>
                 <p className="mt-3 mx-auto max-w-[36ch] text-body text-muted">
                   Thank you. A confirmation has been sent to{' '}
-                  <span className="font-medium text-ink">{confirmed.email}</span>. Tracking details
-                  will follow as soon as your order ships.
+                  <span className="font-medium text-ink">{confirmed.email}</span>. Our research
+                  team will follow up with next steps for your order.
                 </p>
 
                 <div className="mt-6 flex items-center justify-between rounded-[12px] bg-paper px-5 py-4 text-left">
@@ -588,6 +595,10 @@ export default function CheckoutPage() {
                     Back to home
                   </Link>
                 </div>
+
+                <p className="mt-5 text-[11px] leading-relaxed text-muted">
+                  {compliance.productDisclaimerShort} {compliance.checkoutMedical}
+                </p>
               </motion.div>
             </div>
           </>

@@ -21,9 +21,9 @@ const grotesk = Hanken_Grotesk({
   display: 'swap',
 });
 
-const title = `${brand.name} — Premium Research Peptides for Laboratory R&D`;
+const title = `${brand.name} — Research Peptides for Laboratory R&D`;
 const description =
-  'Premium research peptides: Retatrutide, Tirzepatide, BPC-157, TB-500, GHK-Cu, NAD+. Janoshik tested, cold-chain delivery, tracked UK & EU shipping. For laboratory R&D only.';
+  'Research-use-only peptide compounds for controlled laboratory R&D: Retatrutide, Tirzepatide, BPC-157, TB-500, GHK-Cu, NAD+. Janoshik-verified per batch with full documentation. Not for human or veterinary use.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -35,15 +35,17 @@ export const metadata: Metadata = {
   applicationName: brand.name,
   keywords: [
     'research peptides',
-    'Retatrutide',
-    'Tirzepatide',
-    'BPC-157',
-    'TB-500',
-    'GHK-Cu',
-    'NAD+',
-    'Janoshik tested peptides',
+    'research-use-only peptides',
+    'laboratory reference compounds',
+    'Retatrutide research reference',
+    'Tirzepatide research reference',
+    'BPC-157 research reference',
+    'TB-500 research reference',
+    'GHK-Cu research reference',
+    'NAD+ research reference',
+    'Janoshik tested research peptides',
     'laboratory research peptides UK',
-    'peptides EU supply',
+    'research peptide supplier EU',
   ],
   authors: [{ name: brand.name, url: SITE_URL }],
   creator: brand.name,

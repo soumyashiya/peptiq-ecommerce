@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch, ApiError } from '@/lib/api';
+import { compliance } from '@/lib/content';
 
 const usd = (n: number) =>
   `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -188,8 +189,8 @@ export default function OrderPage() {
           {customerEmail && (
             <p className="mt-8 max-w-2xl text-body text-muted">
               Thank you. A confirmation has been sent to{' '}
-              <span className="font-medium text-ink">{customerEmail}</span>. We&apos;ll email tracking
-              details as soon as your order ships.
+              <span className="font-medium text-ink">{customerEmail}</span>. Our research
+              team will follow up with next steps for your order.
             </p>
           )}
         </motion.div>
@@ -231,12 +232,12 @@ export default function OrderPage() {
                   <span className="tabular-nums text-brand-teal">−{usd(discount)}</span>
                 </div>
               )}
-              <div className="flex justify-between">
-                <span className="text-muted">Shipping</span>
-                <span className="tabular-nums">
-                  {shipping === 0 ? 'Free' : usd(shipping)}
-                </span>
-              </div>
+              {shipping > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-muted">Handling</span>
+                  <span className="tabular-nums">{usd(shipping)}</span>
+                </div>
+              )}
               <div className="flex justify-between border-t border-line pt-3 text-[18px] font-medium">
                 <span>Total</span>
                 <span className="tabular-nums">{usd(total)}</span>
@@ -249,7 +250,7 @@ export default function OrderPage() {
             {(customerName || shipAddress) && (
               <section className="rounded-[10px] bg-paper p-6 md:p-8">
                 <h2 className="text-[13px] font-medium uppercase tracking-[0.1em] text-ink">
-                  Shipping to
+                  Contact address
                 </h2>
                 <address className="mt-4 not-italic text-[15px] leading-relaxed text-ink">
                   {customerName && <span className="block font-medium">{customerName}</span>}
@@ -275,7 +276,7 @@ export default function OrderPage() {
                 {status}
               </p>
               <p className="mt-4 text-[13px] text-muted">
-                We typically dispatch same-day for orders placed before 3pm UK time.
+                Our research team will follow up with next steps for your order.
               </p>
             </section>
           </div>
@@ -295,6 +296,20 @@ export default function OrderPage() {
             Track another order
           </Link>
         </div>
+
+        {/* Mandatory research-use notice on the confirmed order page */}
+        <aside
+          role="note"
+          aria-label="Research-use disclaimer"
+          className="mx-auto mt-10 max-w-3xl rounded-[10px] bg-paper p-6 text-center"
+        >
+          <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-brand-teal">
+            Research-use notice
+          </p>
+          <p className="mt-3 text-[13px] leading-relaxed text-muted">
+            {compliance.checkoutAcknowledgement} {compliance.checkoutMedical}
+          </p>
+        </aside>
       </div>
     </main>
   );

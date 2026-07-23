@@ -23,7 +23,6 @@ const COUNTRIES = [
   'Italy',
   'United States',
   'Canada',
-  'United Arab Emirates',
   'Other',
 ];
 
@@ -106,12 +105,13 @@ const FEATURES = [
     ),
   },
   {
-    label: 'Global, Cold-Chain\nDelivery',
+    label: 'Documented\nBatch Traceability',
     icon: (
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 6h11v9H3zM14 9h4l3 3v3h-7z" />
-        <circle cx="7" cy="18" r="1.6" />
-        <circle cx="17" cy="18" r="1.6" />
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
       </svg>
     ),
   },

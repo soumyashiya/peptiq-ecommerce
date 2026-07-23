@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useCart } from '@/components/cart/CartProvider';
+import { compliance } from '@/lib/content';
 
 const usd = (n: number) =>
   `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -11,7 +12,9 @@ const usd = (n: number) =>
 export default function CartPage() {
   const { items, subtotal, count, setQty, remove } = useCart();
 
-  const shipping = subtotal === 0 ? 0 : subtotal >= 200 ? 0 : 9.95;
+  // Shipping is not currently offered. Kept as a variable so the total logic
+  // continues to compose cleanly if fulfilment is re-introduced later.
+  const shipping = 0;
   const total = subtotal + shipping;
 
   if (items.length === 0) {
@@ -21,7 +24,8 @@ export default function CartPage() {
           <p className="text-label font-medium uppercase tracking-[0.12em] text-brand-teal">Cart</p>
           <h1 className="mt-3 text-h1 font-light tracking-tight">Your cart is empty</h1>
           <p className="mt-4 max-w-md text-lead font-light text-muted">
-            Add a research compound before proceeding to checkout.
+            Add a research compound before proceeding to checkout. Products are supplied
+            strictly for laboratory research — not for human or veterinary use.
           </p>
           <Link
             href="/#products"
@@ -127,10 +131,6 @@ export default function CartPage() {
                   <span className="text-muted">Subtotal</span>
                   <span className="tabular-nums">{usd(subtotal)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Shipping</span>
-                  <span className="tabular-nums">{shipping === 0 ? 'Free' : usd(shipping)}</span>
-                </div>
                 <div className="flex justify-between border-t border-line pt-3 text-[18px] font-medium">
                   <span>Total</span>
                   <span className="tabular-nums">{usd(total)}</span>
@@ -150,10 +150,10 @@ export default function CartPage() {
                 Continue browsing
               </Link>
 
-              <p className="mt-6 text-[11px] leading-relaxed text-muted">
-                For laboratory research use only. Not for human or veterinary consumption. Orders ship
-                under validated cold-chain conditions across the UK &amp; EU.
-              </p>
+              <div className="mt-6 space-y-2 text-[11px] leading-relaxed text-muted">
+                <p>{compliance.checkoutAcknowledgement}</p>
+                <p>{compliance.checkoutMedical}</p>
+              </div>
             </div>
           </aside>
         </div>

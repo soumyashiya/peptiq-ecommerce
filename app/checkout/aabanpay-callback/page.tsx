@@ -68,7 +68,7 @@ function AabanpayCallback() {
     loading: { title: 'Verifying payment…', body: 'Just a moment.' },
     success: {
       title: 'Payment received',
-      body: 'Thank you. Your order is confirmed and will be dispatched shortly.',
+      body: 'Thank you. Your order is confirmed and our research team will follow up shortly.',
     },
     pending: {
       title: 'Payment pending',

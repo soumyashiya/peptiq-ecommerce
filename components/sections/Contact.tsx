@@ -121,7 +121,7 @@ const icons = {
   ),
 };
 
-const chips = ['Janoshik tested', 'Cold-chain tracked', 'UK & EU shipping'];
+const chips = ['Janoshik tested', 'Full batch COA', 'Tamper-evident seal'];
 
 export function Contact() {
   const [sent, setSent] = useState(false);
@@ -153,8 +153,8 @@ export function Contact() {
                 <div className="mt-10 space-y-6">
                   <Method icon={icons.mail} label="Email" value={brand.email} href={`mailto:${brand.email}`} />
                   <Method icon={icons.clock} label="Response time" value="Within 1 working day" />
-                  <Method icon={icons.truck} label="Dispatch" value="Same-day UK · pre-3pm orders" />
-                  <Method icon={icons.pin} label="Supply" value={brand.address} />
+                  <Method icon={icons.truck} label="Documentation" value="Per-batch COA on request" />
+                  <Method icon={icons.pin} label="Operations" value={brand.address} />
                 </div>
 
                 <div className="mt-auto flex flex-wrap gap-2.5 pt-10">

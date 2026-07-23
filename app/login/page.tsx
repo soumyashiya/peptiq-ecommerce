@@ -9,7 +9,7 @@ import { brand } from '@/lib/content';
 
 const featureBullets = [
   'Every batch independently verified by Janoshik Analytical',
-  'Validated cold-chain shipping across UK & EU',
+  'Full per-batch certificate of analysis with every research unit',
   '56-day room-temperature stability testing',
 ];
 
