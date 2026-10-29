@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
             <p className="text-label font-medium uppercase tracking-[0.14em] text-paper/70">
               Account recovery
             </p>
-            <h2 className="mt-5 text-[clamp(2rem,3.6vw,3rem)] font-light leading-[1.05] tracking-tight text-balance">
+            <h2 className="mt-5 t-h2 text-balance">
               Reset your password securely.
             </h2>
             <ul className="mt-10 space-y-4">
@@ -167,7 +167,7 @@ export default function ForgotPasswordPage() {
               <p className="text-label font-medium uppercase tracking-[0.12em] text-brand-teal">
                 Forgot password
               </p>
-              <h1 className="mt-3 text-[clamp(2rem,4vw,2.75rem)] font-light leading-[1.05] tracking-tight">
+              <h1 className="mt-3 t-h2">
                 {sent ? 'Check your inbox' : 'Reset your password'}
               </h1>
               <p className="mt-3 text-body text-muted">

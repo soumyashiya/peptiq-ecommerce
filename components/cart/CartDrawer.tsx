@@ -57,7 +57,7 @@ export function CartDrawer() {
             {/* items */}
             {items.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-                <p className="text-lead font-light text-muted">Your cart is empty</p>
+                <p className="t-lead text-muted">Your cart is empty</p>
                 <button
                   onClick={closeCart}
                   className="text-[14px] font-medium uppercase tracking-[0.08em] text-brand-teal link-underline"

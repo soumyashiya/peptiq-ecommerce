@@ -2,8 +2,9 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { hero } from '@/lib/content';
+import { hero, stats } from '@/lib/content';
 
 // The headline is the text LCP candidate and is masked out until it slides in,
 // so the entrance is kept short — the stagger still reads, but LCP lands ~1.2s earlier.
@@ -15,6 +16,12 @@ const lineVariants = {
   }),
 };
 
+const fadeUp = (delay: number) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1], delay },
+});
+
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
@@ -23,18 +30,16 @@ export function Hero() {
     offset: ['start start', 'end start'],
   });
 
-  // Layered parallax: image drifts up, text fades, whole hero lifts.
+  // Layered parallax: image drifts down, text lifts and fades.
   const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
   const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
-  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '-30%']);
+  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '-20%']);
   const fade = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
+  // `.hero` carries the base colour and the ::after scrim — see globals.css.
   return (
-    <section ref={ref} id="top" className="relative h-[100svh] min-h-[640px] overflow-hidden">
-      {/* Blue gradient base */}
-      <div className="absolute inset-0 bg-gradient-to-b from-brand-soft via-brand-sky to-brand" />
+    <section ref={ref} id="top" className="hero h-[100svh] min-h-[680px]">
 
-      {/* Floating product render with parallax + entrance */}
       <motion.div
         style={{ y: reduce ? 0 : imageY, scale: reduce ? 1 : imageScale }}
         className="absolute inset-0"
@@ -55,74 +60,91 @@ export function Hero() {
             fill
             priority
             sizes="100vw"
-            className="object-cover"
+            quality={95}
+            /*
+             * Lower percentage shows more of the image's LEFT, which pushes the
+             * subjects further right in frame and keeps the copy column clear.
+             * At 70% the product box collided with the headline.
+             */
+            /*
+             * No opacity, filter or blend — matching the reference site, where
+             * the image is untouched and ALL the darkening comes from the
+             * .hero::after scrim. Fading the image dulls the subject too;
+             * a scrim only darkens where the copy sits.
+             */
+            className="object-cover object-[42%_center]"
           />
         </motion.div>
       </motion.div>
 
-      {/* Readability scrim at the bottom */}
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-brand/70 to-transparent" />
-
-      {/* Kicker, top-left under header */}
-      <motion.div
-        style={{ opacity: fade }}
-        className="frame absolute inset-x-0 top-28 md:top-32"
-      >
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
-          className="max-w-xl text-[13px] font-medium uppercase leading-relaxed tracking-[0.12em] text-paper/90"
-        >
-          {hero.kicker}
-        </motion.p>
-      </motion.div>
-
-      {/* Oversized headline, bottom-left */}
+      {/*
+        Outer element owns the scroll-linked parallax/fade; the inner
+        `.hero-content` owns the one-shot entrance. Keeping them on separate
+        elements is deliberate — see the note on `.hero-content` in globals.css.
+      */}
       <motion.div
         style={{ y: reduce ? 0 : textY, opacity: fade }}
-        className="frame absolute inset-x-0 bottom-28 md:bottom-32"
+        className="frame absolute inset-x-0 bottom-12 md:bottom-20"
       >
-        <h1 className="text-display font-light text-paper">
-          {[hero.line1, hero.line2].map((line, i) => (
-            <span key={line} className="block overflow-hidden">
-              <motion.span
-                custom={i}
-                variants={lineVariants}
-                initial={reduce ? 'show' : 'hidden'}
-                animate="show"
-                className="block"
-              >
-                {line}
-              </motion.span>
+       <div className="hero-content">
+        <span className="inline-flex items-center gap-2 rounded-full bg-brand-lime px-5 py-[7px] text-[11px] font-semibold uppercase tracking-[0.06em] text-ink md:text-[12px]">
+          <span aria-hidden className="text-brand">✦</span>
+          {hero.footerLeft} · {hero.footerRight}
+        </span>
+
+        <h1 className="mt-4 max-w-5xl t-display uppercase text-paper [text-shadow:0_2px_24px_rgba(0,0,0,0.18)]">
+          {[hero.line1, hero.line2].map((line) => (
+            <span key={line} className="block">
+              {line}
             </span>
           ))}
         </h1>
-      </motion.div>
 
-      {/* Bottom bar: tagline · scroll cue · section markers */}
-      <motion.div
-        style={{ opacity: fade }}
-        className="absolute inset-x-0 bottom-0 border-t border-paper/25"
-      >
-        <div className="frame flex items-center justify-between py-4 text-[12px] font-medium uppercase tracking-[0.1em] text-paper/80">
-          <div className="hidden items-center gap-3 md:flex">
-            <span>{hero.footerLeft}</span>
-            <span className="h-px w-10 bg-paper/40" />
-            <span className="text-paper/60">{hero.footerRight}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="animate-scroll-cue">↓</span>
-            <span>{hero.scrollCue}</span>
-          </div>
-          <div className="hidden items-center gap-3 md:flex">
-            {['01', '02', '03', '04', '05', '06', '07'].map((n) => (
-              <span key={n} className="text-paper/50 transition-colors hover:text-paper">
-                [{n}]
-              </span>
-            ))}
-          </div>
+        <p
+          className="mt-7 max-w-[32rem] t-lead text-paper/90 md:mt-10"
+        >
+          {hero.kicker}
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center gap-3 md:mt-10 md:gap-4">
+          <Link
+            href={hero.primaryCta.href}
+            className="hero-button inline-flex min-w-[15rem] items-center justify-center gap-2.5 rounded-full border-[1.5px] border-ink bg-brand-lime px-9 py-[15px] text-[13px] font-semibold uppercase tracking-[0.06em] text-ink transition-colors duration-300 hover:bg-paper md:text-[14px]"
+          >
+            {hero.primaryCta.label}
+            <span aria-hidden>→</span>
+          </Link>
+          <Link
+            href={hero.secondaryCta.href}
+            className="hero-button inline-flex items-center justify-center rounded-full border-[1.5px] border-paper/40 px-9 py-[15px] text-[13px] font-semibold uppercase tracking-[0.06em] text-paper transition-colors duration-300 hover:border-paper hover:bg-paper hover:text-ink md:text-[14px]"
+          >
+            {hero.secondaryCta.label}
+          </Link>
         </div>
+
+        <ul
+          className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] font-semibold text-paper md:mt-14 md:text-[13px]"
+        >
+          {stats.items.slice(0, 3).map((s, i) => (
+            <li key={s.caption} className="flex items-center gap-3">
+              {i > 0 && <span aria-hidden className="text-paper/40">•</span>}
+              <span className="flex items-center gap-1.5">
+                {i === 0 && (
+                  <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-brand-lime">
+                    <path d="M12 2.5 14.6 5l3.5-.4.6 3.5 3 1.9-1.4 3.2 1.4 3.2-3 1.9-.6 3.5-3.5-.4L12 23.5 9.4 21l-3.5.4-.6-3.5-3-1.9L3.7 12.8 2.3 9.6l3-1.9.6-3.5 3.5.4Z" fill="currentColor" />
+                    <path d="m8.5 12.5 2.3 2.3 4.7-4.8" className="stroke-ink" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                <span className="text-brand-lime">
+                  {s.value}
+                  {s.suffix}
+                </span>{' '}
+                {s.caption}
+              </span>
+            </li>
+          ))}
+        </ul>
+       </div>
       </motion.div>
     </section>
   );

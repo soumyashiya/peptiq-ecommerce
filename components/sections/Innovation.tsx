@@ -57,7 +57,7 @@ export function Innovation() {
   }, []);
 
   return (
-    <section id="innovation" ref={root} className="bg-paper py-section-sm md:py-section">
+    <section id="innovation" ref={root} className="py-section-sm md:py-section">
       <div className="frame">
         <SectionTag label={inv.label} index={inv.index} />
 
@@ -66,8 +66,8 @@ export function Innovation() {
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-32">
               <Reveal>
-                <h2 className="max-w-[14ch] text-h2 font-light text-balance">{inv.title}</h2>
-                <p className="mt-8 max-w-prose text-lead font-light text-muted">{inv.body}</p>
+                <h2 className="max-w-[14ch] t-h2 text-balance">{inv.title}</h2>
+                <p className="mt-8 max-w-prose t-lead text-muted">{inv.body}</p>
               </Reveal>
             </div>
           </div>
@@ -83,10 +83,10 @@ export function Innovation() {
               {inv.milestones.map((m) => (
                 <li key={m.year} className="tl-item relative">
                   <span className="absolute -left-12 top-2 hidden h-3 w-3 -translate-x-[5px] rounded-full border-2 border-brand-sky bg-paper sm:block" />
-                  <div className="text-[clamp(2.5rem,4vw,3.5rem)] font-light leading-none tracking-tight text-brand-sky">
+                  <div className="t-h1 text-brand-sky">
                     {m.year}
                   </div>
-                  <h3 className="mt-4 text-h3 font-light tracking-tight">{m.title}</h3>
+                  <h3 className="mt-4 t-h3">{m.title}</h3>
                   <p className="mt-3 max-w-prose text-body text-muted">{m.desc}</p>
                 </li>
               ))}

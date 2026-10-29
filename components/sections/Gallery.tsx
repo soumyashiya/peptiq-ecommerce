@@ -24,7 +24,7 @@ export function Gallery() {
   const [active, setActive] = useState(0);
 
   return (
-    <section className="relative overflow-hidden bg-ink py-section-sm text-paper md:py-section">
+    <section className="relative overflow-hidden py-section-sm md:py-section">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-40 top-0 h-[500px] w-[500px] rounded-full bg-brand/20 blur-[120px]"
@@ -39,20 +39,20 @@ export function Gallery() {
                 <span className="h-px w-8 bg-brand-sky" />
                 {gallery.label}
               </p>
-              <h2 className="mt-6 max-w-[16ch] text-h2 font-light text-balance">
+              <h2 className="mt-6 max-w-[16ch] t-h2 text-balance">
                 {gallery.title}
               </h2>
             </Reveal>
           </div>
           <div className="lg:col-span-5">
             <Reveal delay={0.1}>
-              <p className="max-w-prose text-body text-paper/55">{gallery.intro}</p>
-              <div className="mt-6 flex items-center gap-4 font-light tabular-nums">
+              <p className="max-w-prose text-body text-muted">{gallery.intro}</p>
+              <div className="mt-6 flex items-center gap-4 font-normal tabular-nums">
                 <span className="text-[2.5rem] leading-none text-brand-sky">
                   0{active + 1}
                 </span>
-                <span className="h-px w-10 bg-paper/25" />
-                <span className="text-[1.25rem] leading-none text-paper/40">
+                <span className="h-px w-10 bg-ink/20" />
+                <span className="text-[1.25rem] leading-none text-muted">
                   0{items.length}
                 </span>
               </div>
@@ -106,7 +106,7 @@ export function Gallery() {
 
                   {/* collapsed: vertical label */}
                   <span
-                    className={`absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[15px] font-light uppercase tracking-[0.15em] text-paper transition-opacity duration-300 [writing-mode:vertical-rl] ${
+                    className={`absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[15px] font-normal uppercase tracking-[0.15em] text-paper transition-opacity duration-300 [writing-mode:vertical-rl] ${
                       isActive ? 'opacity-0' : 'opacity-90'
                     }`}
                     style={{ transform: 'translateX(-50%) rotate(180deg)' }}
@@ -125,7 +125,7 @@ export function Gallery() {
                     <span className="text-label font-medium uppercase tracking-[0.14em] text-brand-sky">
                       {it.tag}
                     </span>
-                    <span className="mt-3 block text-h3 font-light tracking-tight text-paper">
+                    <span className="mt-3 block t-h3 text-paper">
                       {it.title}
                     </span>
                     <span className="mt-3 block max-w-md text-[15px] leading-relaxed text-paper/70">
@@ -163,7 +163,7 @@ export function Gallery() {
                   <span className="text-label font-medium uppercase tracking-[0.14em] text-brand-sky">
                     {it.tag}
                   </span>
-                  <h3 className="mt-2 text-h3 font-light tracking-tight">{it.title}</h3>
+                  <h3 className="mt-2 t-h3">{it.title}</h3>
                   <p className="mt-2 text-[14px] leading-relaxed text-paper/70">{it.caption}</p>
                 </div>
               </div>

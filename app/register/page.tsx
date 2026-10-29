@@ -219,12 +219,12 @@ export default function RegisterPage() {
                 </svg>
                 Trusted by researchers worldwide
               </p>
-              <h2 className="mt-4 text-[clamp(2rem,3vw,2.6rem)] font-light leading-[1.05] tracking-tight text-ink">
+              <h2 className="mt-4 t-h2 text-ink">
                 Premium peptides.
                 <br />
                 <span className="text-brand-sky">Proven purity.</span>
               </h2>
-              <p className="mt-4 max-w-sm text-[15px] font-light leading-relaxed text-muted">
+              <p className="mt-4 max-w-sm text-[15px] font-normal leading-relaxed text-muted">
                 High-quality research peptides, verified, traceable and delivered with integrity.
               </p>
 

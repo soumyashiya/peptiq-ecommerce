@@ -20,7 +20,7 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <main className="bg-paper pt-24 md:pt-32">
+    <main className="pt-24 md:pt-32">
       <div className="frame grid min-h-[70vh] place-items-center pb-section-sm md:pb-section">
         <div className="w-full max-w-[460px]">
           <Link
@@ -34,7 +34,7 @@ export default function TrackOrderPage() {
             <p className="text-label font-medium uppercase tracking-[0.12em] text-brand-teal">
               Support
             </p>
-            <h1 className="mt-3 text-h1 font-light tracking-tight">Track your order</h1>
+            <h1 className="mt-3 t-h1">Track your order</h1>
             <p className="mt-3 text-body text-muted">
               Enter the reference number from your confirmation email (starts with{' '}
               <span className="font-medium text-ink">PQ-</span>).

@@ -9,8 +9,26 @@ import { useAuth } from './AuthProvider';
  * Exact matches for standalone pages; prefixes (ending in `/`) for
  * dynamic sections like `/products/[slug]` or `/policies/[slug]`.
  */
-const PUBLIC_EXACT = ['/', '/login', '/register', '/forgot-password', '/cart', '/checkout', '/track-order'];
-const PUBLIC_PREFIXES = ['/products/', '/policies/', '/checkout/', '/order/'];
+const PUBLIC_EXACT = [
+  '/',
+  '/shop',
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/cart',
+  '/checkout',
+  '/track-order',
+  '/wishlist',
+];
+// `/payment-capture/` is authorized by the opaque token in the emailed URL, not
+// by a session — gating it behind login would make every payment link dead.
+const PUBLIC_PREFIXES = [
+  '/products/',
+  '/policies/',
+  '/checkout/',
+  '/order/',
+  '/payment-capture/',
+];
 
 function isPublicPath(pathname: string) {
   if (PUBLIC_EXACT.includes(pathname)) return true;

@@ -233,10 +233,10 @@ export default function CheckoutPage() {
   /* ── Empty cart ── */
   if (items.length === 0 && !confirmed) {
     return (
-      <main className="bg-mist pt-28 md:pt-32">
+      <main className="pt-28 md:pt-32">
         <div className="frame flex min-h-[60vh] flex-col items-center justify-center py-section-sm text-center">
-          <h1 className="text-h2 font-light tracking-tight">Your cart is empty</h1>
-          <p className="mt-4 text-lead font-light text-muted">
+          <h1 className="t-h2">Your cart is empty</h1>
+          <p className="mt-4 t-lead text-muted">
             Add a research compound before checking out. Products are supplied strictly for
             laboratory research — not for human or veterinary use.
           </p>
@@ -252,7 +252,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="bg-mist pt-24 md:pt-28">
+    <main className="pt-24 md:pt-28">
       <div className="frame pb-section-sm md:pb-section">
         <div className="flex items-center gap-4 text-[13px]">
           <Link
@@ -264,7 +264,7 @@ export default function CheckoutPage() {
           <span className="font-medium uppercase tracking-[0.14em] text-brand-teal">Final step</span>
         </div>
 
-        <h1 className="mt-4 text-display font-light leading-[0.95] tracking-tight">Checkout</h1>
+        <h1 className="mt-4 t-display">Checkout</h1>
 
         <form
           onSubmit={placeOrder}
@@ -468,7 +468,7 @@ export default function CheckoutPage() {
 
                 <div className="mt-5 flex items-baseline justify-between border-t border-line pt-5">
                   <span className="text-[17px] font-medium">Total</span>
-                  <span className="text-[22px] font-light tabular-nums">{usd(total)}</span>
+                  <span className="text-[22px] font-normal tabular-nums">{usd(total)}</span>
                 </div>
               </div>
 
@@ -553,7 +553,7 @@ export default function CheckoutPage() {
                   </svg>
                 </motion.span>
 
-                <h2 id="order-placed-title" className="mt-6 text-h2 font-light tracking-tight">
+                <h2 id="order-placed-title" className="mt-6 t-h2">
                   Order placed
                 </h2>
                 <p className="mt-3 mx-auto max-w-[36ch] text-body text-muted">

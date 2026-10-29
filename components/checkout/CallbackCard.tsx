@@ -52,7 +52,7 @@ function StatusIcon({ status }: { status: CallbackStatus }) {
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <main className="bg-mist pt-28 md:pt-32">
+    <main className="pt-28 md:pt-32">
       <div className="frame grid min-h-[70vh] place-items-center pb-section-sm md:pb-section">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -93,7 +93,7 @@ export function CallbackCard({
         <StatusIcon status={status} />
       </span>
       <div aria-live="polite" aria-busy={status === 'loading'}>
-        <h1 className="mt-6 text-h2 font-light tracking-tight">{title}</h1>
+        <h1 className="mt-6 t-h2">{title}</h1>
         <p className="mt-3 mx-auto max-w-[36ch] text-body text-muted">{body}</p>
       </div>
       {children}

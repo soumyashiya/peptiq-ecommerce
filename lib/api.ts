@@ -100,3 +100,81 @@ export async function apiFetch<T = unknown>(path: string, init: ApiInit = {}): P
 
   return parsed as T;
 }
+
+/* ── Manual payment capture ──────────────────────────────────────────────── */
+/*
+ * Bank-transfer orders email the customer a link containing an opaque token.
+ * That token is the only credential these three endpoints accept — there is no
+ * Authorization header involved — so every call here passes `auth: false`.
+ * See API_DOCUMENTATION §8.
+ */
+
+export type CaptureBank = {
+  payeeName: string;
+  sortCode: string;
+  accountNumber: string;
+  reference: string;
+};
+
+export type CaptureValidateResponse = {
+  ok: true;
+  order: Record<string, unknown>;
+  items: Record<string, unknown>[];
+  payments: Record<string, unknown>[];
+  /** True only when no promo is applied yet and the order has no bundle item. */
+  allowPromo: boolean;
+  bank: CaptureBank;
+};
+
+export type CaptureApplyPromoResponse = {
+  ok: true;
+  promoCode: string;
+  promoDiscountPercent: number;
+  discountAmount: number;
+  total: number;
+};
+
+/** `received` = approved · `rejected` · `pending` = verifier unavailable. */
+export type CapturePaymentStatus = 'received' | 'rejected' | 'pending';
+
+export type CaptureUploadResponse = {
+  ok: true;
+  screenshotUrl: string;
+  screenshotFilename: string;
+  verification: unknown;
+  payment_status: CapturePaymentStatus;
+  /** Present when payment_status is `pending`. */
+  verification_error?: string;
+};
+
+export const paymentCapture = {
+  /** Token failures come back as 400 *or* 404 — treat both as an invalid link. */
+  validate: (token: string) =>
+    apiFetch<CaptureValidateResponse>('/api/payment-capture/validate', {
+      method: 'POST',
+      json: { token },
+      auth: false,
+    }),
+
+  applyPromo: (token: string, promoCode: string) =>
+    apiFetch<CaptureApplyPromoResponse>('/api/payment-capture/apply-promo', {
+      method: 'POST',
+      json: { token, promoCode },
+      auth: false,
+    }),
+
+  /**
+   * Multipart upload — the file field must be named `paymentScreenshot`
+   * (max 25 MB). A 200 does NOT mean approved: read `payment_status`.
+   */
+  upload: (token: string, file: File) => {
+    const form = new FormData();
+    form.append('token', token);
+    form.append('paymentScreenshot', file);
+    return apiFetch<CaptureUploadResponse>('/api/payment-capture/upload', {
+      method: 'POST',
+      form,
+      auth: false,
+    });
+  },
+};

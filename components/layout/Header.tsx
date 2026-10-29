@@ -7,10 +7,16 @@ import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import { brand, nav } from '@/lib/content';
 import { useCart } from '@/components/cart/CartProvider';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useWishlist } from '@/components/wishlist/WishlistProvider';
+import { SearchOverlay } from '@/components/layout/SearchOverlay';
+import { TrustTicker } from '@/components/layout/TrustTicker';
+import { MenuOverlay } from '@/components/layout/MenuOverlay';
+import { Wordmark } from '@/components/layout/Wordmark';
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const burgerRef = useRef<HTMLButtonElement>(null);
@@ -19,6 +25,7 @@ export function Header() {
   const isHome = pathname === '/';
   const hideChrome = pathname === '/login';
   const { count, openCart } = useCart();
+  const { count: wishCount } = useWishlist();
   const { user, logout } = useAuth();
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 });
@@ -47,25 +54,16 @@ export function Header() {
     };
   }, [accountOpen]);
 
-  // The burger panel is a disclosure, not a modal — Escape closes it and returns
-  // focus to the burger, but it deliberately doesn't trap focus or lock scroll.
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      setOpen(false);
-      burgerRef.current?.focus();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
-
-  // Never leave the panel open behind a route change.
+  // Never leave the panel or search open behind a route change.
   useEffect(() => {
     setOpen(false);
+    setSearchOpen(false);
   }, [pathname]);
 
   const solid = scrolled || !isHome;
+  // Transparent header sits on the hero photo, which is dark lavender — the
+  // default ink-on-light chrome is unreadable there, so flip it to paper.
+  const onHero = !solid;
   const linkHref = (href: string) => (isHome ? href : `/${href.replace(/^#/, '#')}`.replace('//', '/'));
 
   const handleSignOut = () => {
@@ -83,51 +81,94 @@ export function Header() {
       transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
       className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,box-shadow] duration-500 ease-smooth ${
         solid
-          ? 'bg-paper/80 shadow-[0_1px_0_0_rgba(0,0,0,0.06)] backdrop-blur-xl'
+          ? 'bg-paper/[0.72] shadow-[0_1px_0_0_rgba(0,0,0,0.06)] [backdrop-filter:saturate(1.8)_blur(20px)]'
           : 'bg-transparent'
       }`}
     >
-      <div className="frame flex h-20 items-center justify-between">
-        {/* Logo */}
-        <Link href={isHome ? '#top' : '/'} className="group flex items-center gap-2.5" aria-label={brand.name}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-gradient-to-br from-brand-sky to-brand text-paper shadow-[0_6px_16px_-6px_rgba(24,99,220,0.7)] transition-transform duration-500 ease-smooth group-hover:-rotate-6">
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
-              <path d="M12 3 19.8 7.5 19.8 16.5 12 21 4.2 16.5 4.2 7.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-              <circle cx="12" cy="3" r="1.7" fill="currentColor" />
-              <circle cx="19.8" cy="16.5" r="1.7" fill="currentColor" />
-              <circle cx="4.2" cy="16.5" r="1.7" fill="currentColor" />
-            </svg>
-          </span>
-          <span className="text-[20px] font-semibold tracking-[-0.025em] text-ink">
-            {brand.name.slice(0, -2)}
-            <span className="text-brand-sky">{brand.name.slice(-2)}</span>
-          </span>
+      <TrustTicker />
+
+      {/*
+        Three-column bar: menu left · wordmark centred · utilities right.
+        The outer columns are `flex-1 basis-0 min-w-0` so both sides share the
+        leftover width equally and the wordmark stays dead centre.
+      */}
+      <div className="frame flex h-[72px] items-center gap-4 md:h-[84px]">
+        {/* ── Left: burger + label, at every width ── */}
+        <div className="flex min-w-0 flex-1 basis-0 items-center">
+          <button
+            ref={burgerRef}
+            // Open-only: the overlay covers this button and carries its own Close.
+            onClick={() => setOpen(true)}
+            // Hover opens it too, but only for real pointers — touch fires a
+            // synthetic mouseenter before click, which would open-then-close.
+            onPointerEnter={(e) => e.pointerType === 'mouse' && setOpen(true)}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="site-menu"
+            className={`group flex items-center gap-4 transition-colors ${onHero ? 'text-paper' : 'text-ink'}`}
+          >
+            <span className="relative flex h-10 w-7 flex-col items-start justify-center gap-[6px]">
+              <span className={`h-px w-7 bg-current transition-all duration-300 ${open ? 'translate-y-[7px] rotate-45' : ''}`} />
+              <span className={`h-px bg-current transition-all duration-300 ${open ? 'w-7 opacity-0' : 'w-5 group-hover:w-7'}`} />
+              <span className={`h-px w-7 bg-current transition-all duration-300 ${open ? '-translate-y-[7px] -rotate-45' : ''}`} />
+            </span>
+            <span className="hidden text-label font-bold uppercase sm:inline">
+              {nav.menuLabel}
+            </span>
+          </button>
+        </div>
+
+        {/* ── Centre: the shared wordmark (see Wordmark.tsx) ── */}
+        <Link
+          href={isHome ? '#top' : '/'}
+          className={`shrink-0 transition-colors ${onHero ? 'text-paper' : 'text-ink'}`}
+          aria-label={brand.name}
+        >
+          <Wordmark />
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-9 lg:flex">
-          {nav.links.map((l) => (
-            <a
-              key={l.href}
-              href={linkHref(l.href)}
-              className="group relative text-[13px] font-medium uppercase tracking-[0.08em] text-ink/80 transition-colors hover:text-brand-teal"
-            >
-              {l.label}
-              <span className="absolute -bottom-1.5 left-0 h-px w-full origin-right scale-x-0 bg-brand-teal transition-transform duration-400 ease-smooth group-hover:origin-left group-hover:scale-x-100" />
-            </a>
-          ))}
-        </nav>
+        {/* ── Right: utilities ── */}
+        <div className="flex min-w-0 flex-1 basis-0 items-center justify-end gap-1 sm:gap-2">
 
-        <div className="flex items-center gap-3 sm:gap-5">
-          <a
-            href={linkHref(nav.cta.href)}
-            className="hidden text-[13px] font-medium uppercase tracking-[0.08em] text-brand-teal link-underline md:inline-flex"
+          {/* Search */}
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search products"
+            className={`flex h-10 w-10 items-center justify-center transition-colors ${onHero ? 'text-paper hover:text-brand-lime' : 'text-ink hover:text-brand-teal'}`}
           >
-            {nav.cta.label}
-          </a>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+          </button>
+
+          {/* Wishlist */}
+          <Link
+            href="/wishlist"
+            aria-label={`Wishlist, ${wishCount} item${wishCount === 1 ? '' : 's'}`}
+            className={`relative hidden h-10 w-10 items-center justify-center transition-colors sm:flex ${onHero ? 'text-paper hover:text-brand-lime' : 'text-ink hover:text-brand-teal'}`}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20.3 4.9 13.2a4.5 4.5 0 0 1 6.4-6.3l.7.7.7-.7a4.5 4.5 0 0 1 6.4 6.3Z" />
+            </svg>
+            <AnimatePresence>
+              {wishCount > 0 && (
+                <motion.span
+                  key={wishCount}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+                  aria-hidden
+                  className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-brand-lime ring-2 ring-ink/10"
+                />
+              )}
+            </AnimatePresence>
+          </Link>
 
           {/* Account: icon-only, opens dropdown on click when signed in */}
-          <div ref={accountRef} className="relative hidden sm:block">
+          <div ref={accountRef} className="relative">
             {user ? (
               <>
                 <button
@@ -186,7 +227,7 @@ export function Header() {
               <Link
                 href="/login"
                 aria-label="Sign in"
-                className="flex h-10 w-10 items-center justify-center text-ink transition-colors hover:text-brand-teal"
+                className={`flex h-10 w-10 items-center justify-center transition-colors ${onHero ? 'text-paper hover:text-brand-lime' : 'text-ink hover:text-brand-teal'}`}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="8" r="4" />
@@ -200,7 +241,7 @@ export function Header() {
           <button
             onClick={openCart}
             aria-label={`Cart, ${count} item${count === 1 ? '' : 's'}`}
-            className="relative flex h-10 w-10 items-center justify-center text-ink transition-colors hover:text-brand-teal"
+            className={`relative flex h-10 w-10 items-center justify-center transition-colors ${onHero ? 'text-paper hover:text-brand-lime' : 'text-ink hover:text-brand-teal'}`}
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 7h12l-1.2 12.2a1 1 0 0 1-1 .8H8.2a1 1 0 0 1-1-.8L6 7Z" />
@@ -222,93 +263,15 @@ export function Header() {
             </AnimatePresence>
           </button>
 
-          {/* Burger */}
-          <button
-            ref={burgerRef}
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            className="relative flex h-10 w-10 flex-col items-center justify-center gap-[5px] lg:hidden"
-          >
-            <span className={`h-[1.5px] w-6 bg-ink transition-all duration-300 ${open ? 'translate-y-[6.5px] rotate-45' : ''}`} />
-            <span className={`h-[1.5px] w-6 bg-ink transition-all duration-300 ${open ? 'opacity-0' : ''}`} />
-            <span className={`h-[1.5px] w-6 bg-ink transition-all duration-300 ${open ? '-translate-y-[6.5px] -rotate-45' : ''}`} />
-          </button>
         </div>
       </div>
 
       {/* Scroll progress line */}
       <motion.div style={{ scaleX: progress }} className="h-px w-full origin-left bg-brand-sky" />
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {open && (
-          <motion.nav
-            id="mobile-menu"
-            aria-label="Mobile"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden bg-paper/95 backdrop-blur-xl lg:hidden"
-          >
-            <div className="frame flex max-h-[calc(100vh-5rem)] flex-col gap-1 overflow-y-auto py-6">
-              {[...nav.links, nav.cta].map((l) => (
-                <a
-                  key={l.href + l.label}
-                  href={linkHref(l.href)}
-                  onClick={() => setOpen(false)}
-                  className="border-b border-line py-4 text-h3 font-light tracking-tight text-ink"
-                >
-                  {l.label}
-                </a>
-              ))}
-              {user ? (
-                <div className="flex items-center justify-between gap-4 border-b border-line py-4">
-                  <div className="min-w-0">
-                    <p className="text-[12px] font-medium uppercase tracking-[0.1em] text-muted">
-                      Signed in as
-                    </p>
-                    <p className="mt-1 truncate text-h3 font-light tracking-tight text-ink">{user.name}</p>
-                    <p className="truncate text-[13px] text-muted">{user.email}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleSignOut();
-                      setOpen(false);
-                    }}
-                    className="flex flex-none items-center gap-2 rounded-full border border-brand/30 px-4 py-2 text-[13px] font-medium uppercase tracking-[0.08em] text-brand transition-colors hover:bg-brand hover:text-paper"
-                  >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
-                      <path d="M10 17l-5-5 5-5" />
-                      <path d="M15 12H5" />
-                    </svg>
-                    Sign out
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  className="border-b border-line py-4 text-h3 font-light tracking-tight text-brand-teal"
-                >
-                  Sign in
-                </Link>
-              )}
-              <Link
-                href="/cart"
-                onClick={() => setOpen(false)}
-                className="py-4 text-h3 font-light tracking-tight text-ink"
-              >
-                Cart {count > 0 && `(${count})`}
-              </Link>
-            </div>
-          </motion.nav>
-        )}
-      </AnimatePresence>
+      <MenuOverlay open={open} onClose={() => setOpen(false)} linkHref={linkHref} />
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </motion.header>
   );
 }

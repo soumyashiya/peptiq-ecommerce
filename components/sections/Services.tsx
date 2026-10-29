@@ -9,21 +9,23 @@ import { Parallax } from '@/components/ui/Parallax';
 
 export function Services() {
   return (
-    <section id="services" className="bg-ink text-paper py-section-sm md:py-section">
+    <section id="services" className="py-section-sm md:py-section">
       <div className="frame">
-        <div className="[&_.section-tag]:border-paper/15 [&_.section-tag]:text-brand-sky [&_.section-tag_.text-ink\\/40]:text-paper/40">
+        {/* On the lavender background the default `.section-tag` styling
+            already reads correctly — no dark-mode overrides needed. */}
+        <div>
           <SectionTag label={services.label} index={services.index} />
         </div>
 
         <div className="mt-16 grid grid-cols-1 gap-10 lg:mt-24 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <Reveal>
-              <h2 className="max-w-[14ch] text-h2 font-light text-balance">{services.title}</h2>
+              <h2 className="max-w-[14ch] t-h2 text-balance">{services.title}</h2>
             </Reveal>
           </div>
           <div className="flex items-end lg:col-span-5">
             <Reveal delay={0.1}>
-              <p className="max-w-prose text-lead font-light text-paper/70">{services.body}</p>
+              <p className="max-w-prose t-lead text-muted">{services.body}</p>
             </Reveal>
           </div>
         </div>
@@ -54,8 +56,8 @@ export function Services() {
                     <span className="text-[13px] font-medium tracking-[0.1em] text-brand-sky">
                       0{i + 1}
                     </span>
-                    <h3 className="mt-5 text-h2 font-light tracking-tight">{item.title}</h3>
-                    <p className="mt-6 max-w-prose text-body text-paper/60">{item.desc}</p>
+                    <h3 className="mt-5 t-h2">{item.title}</h3>
+                    <p className="mt-6 max-w-prose text-body text-muted">{item.desc}</p>
                   </Reveal>
                 </div>
               </div>

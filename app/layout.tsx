@@ -1,25 +1,69 @@
 import type { Metadata, Viewport } from 'next';
-import { Hanken_Grotesk } from 'next/font/google';
+import { Quicksand, Baloo_2, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import { SmoothScroll } from '@/components/providers/SmoothScroll';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { AuthGate } from '@/components/auth/AuthGate';
 import { CartProvider } from '@/components/cart/CartProvider';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import { WishlistProvider } from '@/components/wishlist/WishlistProvider';
 import { ChromeShell } from '@/components/layout/ChromeShell';
 import { brand } from '@/lib/content';
 
 const SITE_URL = 'https://peptiq.org';
 const OG_IMAGE = '/images/peptide-glass.png';
 
-// Closest freely-available match to the reference's "Aktiv Grotesk":
-// a clean neo-grotesk with a usable 300 weight for oversized headlines.
-const grotesk = Hanken_Grotesk({
+/*
+ * Body face — Quicksand, which is the reference site's actual UI face
+ * (verified against hermujo.com's computed styles: `Quicksand, sans-serif` on
+ * body, nav, buttons, prices and every paragraph).
+ *
+ * 300 is deliberately NOT loaded. The reference never sets a weight below 400
+ * on text; its hierarchy runs 400 (body) → 500 (lead/description) → 600
+ * (nav, links, buttons) → 700 (badges, prices, bold headings). Thin type at
+ * small sizes was the main thing separating this site's feel from the
+ * reference, so the weight simply isn't available any more.
+ */
+const sans = Quicksand({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-grotesk',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
   display: 'swap',
 });
+
+/*
+ * Headline face. The reference's headline font is **Indarung** — a licensed,
+ * self-hosted, single-weight (400) caps-only display woff2 served from its own
+ * CDN, so it cannot be used here. Baloo 2 at 800 is the closest freely-licensed
+ * match in mass, width and roundness.
+ *
+ * Applied via `.t-display` / `.t-h1` / `.t-h2` in globals.css. Like the
+ * reference, it now covers section headings too, not just page titles; `.t-h3`
+ * and below stay in Quicksand, which is the same split the reference makes.
+ */
+const display = Baloo_2({
+  subsets: ['latin'],
+  weight: ['700', '800'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
+/**
+ * Figures only — prices, purity percentages, batch codes, assay tables.
+ *
+ * This is a DATA face, not a label face: it earns its place because those
+ * figures have to align in columns and be compared digit-by-digit, which
+ * Quicksand's proportional numerals can't do. It must never be used for prose,
+ * eyebrows or UI labels — a mono caption above every heading is exactly the
+ * template tell this redesign removes.
+ */
+const mono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-mono',
+  display: 'swap',
+});
+
 
 const title = `${brand.name} — Research Peptides for Laboratory R&D`;
 const description =
@@ -82,7 +126,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#1863DC',
+  themeColor: '#6B4FA8',
   colorScheme: 'light',
   width: 'device-width',
   initialScale: 1,
@@ -120,7 +164,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={grotesk.variable} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${sans.variable} ${display.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
       <body suppressHydrationWarning>
         <script
           type="application/ld+json"
@@ -129,10 +177,12 @@ export default function RootLayout({
         <AuthProvider>
           <AuthGate>
             <CartProvider>
-              <SmoothScroll>
-                <ChromeShell>{children}</ChromeShell>
-              </SmoothScroll>
-              <CartDrawer />
+              <WishlistProvider>
+                <SmoothScroll>
+                  <ChromeShell>{children}</ChromeShell>
+                </SmoothScroll>
+                <CartDrawer />
+              </WishlistProvider>
             </CartProvider>
           </AuthGate>
         </AuthProvider>

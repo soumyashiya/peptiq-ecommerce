@@ -97,7 +97,7 @@ export function Sustainability() {
     <section
       id="sustainability"
       ref={section}
-      className="relative h-screen w-full overflow-hidden bg-paper"
+      className="relative h-screen w-full overflow-hidden"
     >
       {/* Full-bleed media, revealed by an expanding clip window */}
       <div ref={media} className="absolute inset-0 h-full w-full will-change-[clip-path]">
@@ -126,13 +126,13 @@ export function Sustainability() {
         {/* lg+ : title —— [window] —— rotating word */}
         <div className="hidden h-full items-center lg:flex">
           <div className="frame flex w-full items-center gap-6">
-            <span className="whitespace-nowrap text-h3 font-light tracking-tight text-brand-teal">
+            <span className="whitespace-nowrap t-h3 text-brand-teal">
               {s.title}
             </span>
             <span className="h-px flex-1 bg-brand-teal/40" />
             <span className="w-[32vw] flex-none" />
             <span className="h-px flex-1 bg-brand-sky/50" />
-            <span className="flex-none whitespace-nowrap rounded-full border border-brand-teal px-6 py-2 text-h3 font-light tracking-tight text-brand-teal">
+            <span className="flex-none whitespace-nowrap rounded-full border border-brand-teal px-6 py-2 t-h3 text-brand-teal">
               <RotatingWord words={s.rotating} />
             </span>
           </div>
@@ -140,10 +140,10 @@ export function Sustainability() {
 
         {/* < lg : title above the window, rotating word below */}
         <div className="flex h-full flex-col items-center justify-between px-6 py-[22vh] text-center lg:hidden">
-          <span className="whitespace-nowrap text-2xl font-light tracking-tight text-brand-teal sm:text-3xl">
+          <span className="whitespace-nowrap text-2xl font-normal tracking-tight text-brand-teal sm:text-3xl">
             {s.title}
           </span>
-          <span className="flex-none whitespace-nowrap rounded-full border border-brand-teal px-5 py-1.5 text-2xl font-light tracking-tight text-brand-teal sm:text-3xl">
+          <span className="flex-none whitespace-nowrap rounded-full border border-brand-teal px-5 py-1.5 text-2xl font-normal tracking-tight text-brand-teal sm:text-3xl">
             <RotatingWord words={s.rotating} />
           </span>
         </div>
@@ -155,7 +155,7 @@ export function Sustainability() {
         className="absolute inset-x-0 bottom-0 z-20 pb-16 md:pb-20"
       >
         <div className="frame max-w-content">
-          <p className="max-w-2xl text-lead font-light text-paper">{s.body}</p>
+          <p className="max-w-2xl t-lead text-paper">{s.body}</p>
           <a
             href={s.cta.href}
             className="group mt-7 inline-flex items-center gap-2 text-[14px] font-medium uppercase tracking-[0.08em] text-paper"

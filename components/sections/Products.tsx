@@ -22,12 +22,12 @@ export function Products() {
         <div className="mt-16 grid grid-cols-1 gap-10 lg:mt-24 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <Reveal>
-              <h2 className="max-w-[16ch] text-h2 font-light text-balance">{p.title}</h2>
+              <h2 className="max-w-[16ch] t-h2 text-balance">{p.title}</h2>
             </Reveal>
           </div>
           <div className="flex items-end lg:col-span-4">
             <Reveal delay={0.1}>
-              <p className="text-lead font-light text-muted">{p.subtitle}</p>
+              <p className="t-lead text-muted">{p.subtitle}</p>
             </Reveal>
           </div>
         </div>
@@ -51,7 +51,7 @@ export function Products() {
                 </div>
                 <div className="mt-6 flex items-start justify-between gap-6">
                   <div>
-                    <h3 className="text-h3 font-light tracking-tight transition-colors group-hover:text-brand-teal">
+                    <h3 className="t-h3 transition-colors group-hover:text-brand-teal">
                       {item.name}
                     </h3>
                     <p className="mt-3 max-w-md text-body text-muted">{item.desc}</p>

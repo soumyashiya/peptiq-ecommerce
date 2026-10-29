@@ -30,7 +30,7 @@ export default function PolicyPage({ params }: Params) {
   if (!policy) notFound();
 
   return (
-    <main className="bg-paper pt-28 md:pt-32">
+    <main className="pt-28 md:pt-32">
       <div className="frame pb-section-sm md:pb-section">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[13px] text-muted">
@@ -46,8 +46,8 @@ export default function PolicyPage({ params }: Params) {
           <p className="text-label font-medium uppercase tracking-[0.12em] text-brand-teal">
             Legal
           </p>
-          <h1 className="mt-4 text-h1 font-light tracking-tight">{policy.title}</h1>
-          <p className="mt-4 text-lead font-light text-muted">{policy.summary}</p>
+          <h1 className="mt-4 t-h1">{policy.title}</h1>
+          <p className="mt-4 t-lead text-muted">{policy.summary}</p>
           <p className="mt-4 text-[13px] uppercase tracking-[0.08em] text-muted">
             Last updated {policy.updated}
           </p>
@@ -57,7 +57,7 @@ export default function PolicyPage({ params }: Params) {
         <div className="mt-12 max-w-prose space-y-10 border-t border-line pt-10">
           {policy.sections.map((section) => (
             <section key={section.heading}>
-              <h2 className="text-h3 font-light tracking-tight">{section.heading}</h2>
+              <h2 className="t-h3">{section.heading}</h2>
               {section.body.map((para, i) => (
                 <p key={i} className="mt-4 text-body text-muted">
                   {para}

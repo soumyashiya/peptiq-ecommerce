@@ -11,6 +11,8 @@
 export const brand = {
   name: 'Peptiq',
   suffix: '',
+  // Small spaced line under the header wordmark.
+  sub: 'RESEARCH',
   tagline: 'ADVANCING DISCOVERY THROUGH PEPTIQ RESEARCH',
   established: 2024,
   email: 'research@peptiq.org',
@@ -40,24 +42,30 @@ export const nav = {
     { label: 'Home', href: '#top' },
     { label: 'About', href: '#story' },
     { label: 'Products', href: '#products' },
-    { label: 'Why Us', href: '#innovation' },
+    { label: 'Why Us', href: '#assurances' },
     { label: 'Testimonial', href: '#news' },
     { label: 'Contact', href: '#contact' },
   ],
-  cta: { label: 'Get in touch', href: '#contact' },
+  cta: { label: 'Shop', href: '/shop' },
+  menuLabel: 'Menu',
   language: 'ENG',
 };
 
 export const hero = {
   kicker:
     'RESEARCH USE ONLY — PREMIUM RESEARCH PEPTIDES FOR LABORATORY R&D. NOT FOR HUMAN OR VETERINARY CONSUMPTION.',
-  line1: 'ENGINEERED FOR',
-  line2: 'RESEARCH PRECISION',
+  // Backed by the per-batch Janoshik report on every product page — keep the
+  // claim about verification, never about effect.
+  line1: 'PEPTIDES YOU CAN',
+  line2: 'ACTUALLY VERIFY.',
   scrollCue: '[ SCROLL DOWN AND ENTER ]',
   footerLeft: 'ADVANCING DISCOVERY',
   footerRight: 'THROUGH PEPTIQ RESEARCH',
-  // Floating lab/research render on a blue gradient.
-  image: '/images/hero-new1.webp',
+  primaryCta: { label: 'Shop all', href: '/shop' },
+  secondaryCta: { label: 'Discover our process', href: '#process' },
+  // Subject sits right-of-centre, leaving the left third open for the copy
+  // stack — Hero.tsx pins the crop with `object-[70%_center]` to keep it there.
+  image: '/images/hero1.jpg',
 };
 
 export const story = {
@@ -70,7 +78,7 @@ export const story = {
     'Peptiq develops research compounds for laboratory use only. Our science-backed peptides and formulations are produced in-house and supplied in sealed, traceable formats for controlled R&D programmes.',
     'We eliminate uncertainty with batch-tested compounds, ISO-certified clean-room manufacturing, and fully documented per-batch records. Every Peptiq research pen is independently verified by Janoshik Analytical.',
   ],
-  cta: { label: 'Discover our process', href: '#innovation' },
+  cta: { label: 'Our process', href: '#process' },
   facts: [
     { value: '48+', label: 'Advanced formulations developed' },
     { value: '26.3k+', label: 'R&D-tested research units' },
@@ -78,6 +86,22 @@ export const story = {
   ],
   image: '/images/about-big.webp',
   image2: '/images/about-small.webp',
+
+  /* ── Editorial "About" layout (Story.tsx) ───────────────────────────────── */
+  eyebrow: 'The Peptiq standard',
+  /** Two-line heading; the second line is set in the purple italic accent. */
+  headlineA: 'Purity, verified.',
+  headlineB: 'Paperwork, included.',
+  founding:
+    'We started Peptiq because the research peptide market needed a supplier willing to be boring about the basics — transparent sourcing, third-party lab testing, and people you can actually message. Every batch is checked before it reaches our shelves, and every product is supplied strictly for laboratory research use.',
+  // AI-generated (Magnific): gloved hands racking unbranded pens in a 4°C lab fridge.
+  photo: '/images/about-cold-storage.jpg',
+  photoAlt: 'Gloved hands placing a research pen into a refrigerated rack',
+  // AI-generated (Magnific): unbranded pens in an open case on lavender; subject in the top half.
+  bannerImage: '/images/about-banner.jpg',
+  bannerAlt: 'Unbranded research pens in an open sample case beside lab vials',
+  noteLabel: 'Janoshik verified',
+  noteText: 'Every batch assayed before it is listed.',
 };
 
 export const stats = {
@@ -104,6 +128,15 @@ export const sustainability = {
   image: '/images/lab-new1.avif',
 };
 
+export const shop = {
+  label: 'SHOP',
+  eyebrow:
+    'RESEARCH USE ONLY — SUPPLYING LABORATORIES WITH HIGH-PURITY RESEARCH PEPTIDES. NOT FOR HUMAN OR VETERINARY CONSUMPTION.',
+  title: 'Research peptides, ready to ship.',
+  subtitle:
+    'Every pre-filled research pen is independently verified by Janoshik Analytical and issued with full batch documentation. Supplied exclusively for controlled laboratory R&D.',
+};
+
 export type ProductCompound = {
   name: string;
   concentration: string;
@@ -122,6 +155,14 @@ export type ProductDetails = {
   storage: string[];
 };
 
+/** Shop taxonomy — drives the category tabs and `?category=` deep links. */
+export type ProductCategory = 'metabolic' | 'recovery' | 'aesthetic' | 'longevity';
+
+/** Single-compound vs multi-compound; drives the `?format=blend` filter. */
+export type ProductFormat = 'single' | 'blend';
+
+export type ProductBadge = 'New' | 'Limited';
+
 export type Product = {
   slug: string;
   name: string;
@@ -136,6 +177,20 @@ export type Product = {
   janoshik?: ProductJanoshik;
   certificate?: string[];
   details?: ProductDetails;
+  category: ProductCategory;
+  format: ProductFormat;
+  /** One-line card subtitle, e.g. 'Triple agonist · 2.4 mL pen'. */
+  tagline: string;
+  /** Short strength chip shown on the card, e.g. '40mg (20 / 20)'. */
+  strength: string;
+  badge?: ProductBadge;
+  /**
+   * Star rating and review count are rendered on product cards only when set.
+   * Deliberately left unset — populate from real review data rather than
+   * publishing an unverifiable average.
+   */
+  rating?: number;
+  reviewCount?: number;
 };
 
 export const products: {
@@ -157,36 +212,22 @@ export const products: {
       slug: 'retatrutide-40mg',
       name: 'Retatrutide 40mg',
       price: 180,
+      category: 'metabolic',
+      format: 'single',
+      tagline: 'Triple agonist · 2.4 mL pen',
+      strength: '40mg',
+      badge: 'New',
       blurb: '2.4 mL pre-filled research pen',
-      desc: '99.27% purity, batch AR1739JAT. 56-day room-temp stability.',
-      image: '/images/products/retatrutide-40mg/front.jpg',
-      gallery: [
-        '/images/products/retatrutide-40mg/front.jpg',
-        '/images/products/retatrutide-40mg/pen.jpg',
-        '/images/products/retatrutide-40mg/open.jpg',
-        '/images/products/retatrutide-40mg/uv.jpg',
-      ],
+      desc: '40mg Retatrutide, pre-filled research pen. 56-day room-temp stability.',
+      image: '/new%20images/products/Retatrutide%20carton%20and%20turquoise%20pen-4.png',
+      gallery: ['/new%20images/products/Retatrutide%20carton%20and%20turquoise%20pen-4.png'],
       longDesc:
         'A 40mg Retatrutide formulation supplied in a pre-filled research device, provided exclusively for controlled laboratory R&D applications. Supplied in sealed format to support compound stability analysis, formulation studies, and device-mechanism evaluation.',
       specs: [
         { label: 'Format', value: '2.4 mL pre-filled pen' },
-        { label: 'Purity', value: '99.269%' },
-        { label: 'Batch', value: 'AR1739JAT' },
-        { label: 'Content', value: '43.72 mg verified' },
-      ],
-      labTestUrl:
-        'https://verify.janoshik.com/tests/163216-ALLUVI_RETATRUTIDE_40MG_KIT_TU3SQLQB9ZDQ',
-      janoshik: {
-        fillVolume: '2.4 mL',
-        batchNumber: 'AR1739JAT',
-        purity: '99.269%',
-        compounds: [
-          { name: 'Retatrutide', concentration: '18.22 mg/mL', content: '43.72 mg' },
-        ],
-      },
-      certificate: [
-        '/images/products/retatrutide-40mg/janoshik/page1.jpg',
-        '/images/products/retatrutide-40mg/janoshik/page2.jpg',
+        { label: 'Compound', value: 'Retatrutide' },
+        { label: 'Strength', value: '40mg' },
+        { label: 'Storage', value: 'Refrigerated, 2–8°C' },
       ],
       details: {
         contents: [
@@ -204,36 +245,21 @@ export const products: {
       slug: 'retatrutide-20mg',
       name: 'Retatrutide 20mg',
       price: 100,
+      category: 'metabolic',
+      format: 'single',
+      tagline: 'Triple agonist · 2.4 mL pen',
+      strength: '20mg',
       blurb: '2.4 mL pre-filled research pen',
-      desc: '99.21% purity, batch AR1721TRT. 20mg pre-filled research pen.',
-      image: '/images/products/retatrutide-20mg/front.jpg',
-      gallery: [
-        '/images/products/retatrutide-20mg/front.jpg',
-        '/images/products/retatrutide-20mg/pen.jpg',
-        '/images/products/retatrutide-20mg/open.jpg',
-        '/images/products/retatrutide-20mg/uv.jpg',
-      ],
+      desc: '20mg Retatrutide, pre-filled research pen.',
+      image: '/new%20images/products/Retatrutide%2020mg%20carton%20with%20turquoise%20pen-5.png',
+      gallery: ['/new%20images/products/Retatrutide%2020mg%20carton%20with%20turquoise%20pen-5.png'],
       longDesc:
         'A 20mg Retatrutide formulation supplied in a pre-filled research device, provided exclusively for controlled laboratory R&D applications. Supplied in sealed format to support compound stability analysis, formulation studies, and device-mechanism evaluation.',
       specs: [
         { label: 'Format', value: '2.4 mL pre-filled pen' },
-        { label: 'Purity', value: '99.21%' },
-        { label: 'Batch', value: 'AR1721TRT' },
-        { label: 'Content', value: '22.96 mg verified' },
-      ],
-      labTestUrl:
-        'https://verify.janoshik.com/tests/163215-ALLUVI_RETATRUTIDE_20MG_KIT_GBHEFN58JXXZ',
-      janoshik: {
-        fillVolume: '2.4 mL',
-        batchNumber: 'AR1721TRT',
-        purity: '99.21%',
-        compounds: [
-          { name: 'Retatrutide', concentration: '9.57 mg/mL', content: '22.96 mg' },
-        ],
-      },
-      certificate: [
-        '/images/products/retatrutide-20mg/janoshik/page1.jpg',
-        '/images/products/retatrutide-20mg/janoshik/page2.jpg',
+        { label: 'Compound', value: 'Retatrutide' },
+        { label: 'Strength', value: '20mg' },
+        { label: 'Storage', value: 'Refrigerated, 2–8°C' },
       ],
       details: {
         contents: [
@@ -251,37 +277,21 @@ export const products: {
       slug: 'tirzepatide-40mg',
       name: 'Tirzepatide 40mg',
       price: 100,
+      category: 'metabolic',
+      format: 'single',
+      tagline: 'Dual agonist · 3 mL pen',
+      strength: '40mg',
       blurb: '3 mL pre-filled research pen',
-      desc: '99.85% purity, batch TR786PAOS. Sealed for formulation studies.',
-      image: '/images/products/tirzepatide-40mg/front.jpg',
-      gallery: [
-        '/images/products/tirzepatide-40mg/front.jpg',
-        '/images/products/tirzepatide-40mg/pen.jpg',
-        '/images/products/tirzepatide-40mg/open.jpg',
-        '/images/products/tirzepatide-40mg/uv.jpg',
-      ],
+      desc: '40mg Tirzepatide, pre-filled research pen. Sealed for formulation studies.',
+      image: '/new%20images/products/Tirzepatide%20Carton%20and%20Pen%20in%20Warm%20Light-6.png',
+      gallery: ['/new%20images/products/Tirzepatide%20Carton%20and%20Pen%20in%20Warm%20Light-6.png'],
       longDesc:
         'A 40mg Tirzepatide formulation supplied in a pre-filled research device, provided exclusively for controlled laboratory R&D applications. Supplied in sealed format to support compound stability analysis, formulation studies, and device-mechanism evaluation.',
       specs: [
         { label: 'Format', value: '3 mL pre-filled pen' },
-        { label: 'Purity', value: '99.85%' },
-        { label: 'Batch', value: 'TR786PAOS' },
-        { label: 'Content', value: '40.05 mg verified' },
-      ],
-      labTestUrl:
-        'https://verify.janoshik.com/tests/147174-ALLUVI_TIRZEPATIDE_40MG_KIT_T5MBWRAYD4HN',
-      janoshik: {
-        fillVolume: '3 mL',
-        batchNumber: 'TR786PAOS',
-        purity: '99.85%',
-        compounds: [
-          { name: 'Tirzepatide', concentration: '13.35 mg/mL', content: '40.05 mg' },
-        ],
-      },
-      certificate: [
-        '/images/products/tirzepatide-40mg/janoshik/page1.jpg',
-        '/images/products/tirzepatide-40mg/janoshik/page2.jpg',
-        '/images/products/tirzepatide-40mg/janoshik/page3.jpg',
+        { label: 'Compound', value: 'Tirzepatide' },
+        { label: 'Strength', value: '40mg' },
+        { label: 'Storage', value: 'Refrigerated, 2–8°C' },
       ],
       details: {
         contents: [
@@ -299,36 +309,21 @@ export const products: {
       slug: 'bpc-157-tb-500-40mg',
       name: 'BPC-157 & TB-500 40mg',
       price: 130,
+      category: 'recovery',
+      format: 'blend',
+      tagline: 'Recovery blend · dual-compound pen',
+      strength: '40mg (20 / 20)',
       blurb: '20mg BPC-157 + 20mg TB-500',
-      desc: '20mg BPC-157 + 20mg TB-500, batch BP1701FSR. Janoshik verified.',
-      image: '/images/products/bpc-157-tb-500-40mg/front.jpg',
-      gallery: [
-        '/images/products/bpc-157-tb-500-40mg/front.jpg',
-        '/images/products/bpc-157-tb-500-40mg/pen.jpg',
-        '/images/products/bpc-157-tb-500-40mg/open.jpg',
-        '/images/products/bpc-157-tb-500-40mg/uv.jpg',
-      ],
+      desc: '20mg BPC-157 + 20mg TB-500, pre-filled research pen.',
+      image: '/new%20images/products/BPC-157%20%26%20TB-500%20on%20Graphite%20Slate-1.png',
+      gallery: ['/new%20images/products/BPC-157%20%26%20TB-500%20on%20Graphite%20Slate-1.png'],
       longDesc:
         'A 40mg BPC-157 & TB-500 formulation supplied in a pre-filled research device, provided exclusively for controlled laboratory R&D applications. Supplied in sealed format to support compound stability analysis, formulation studies, and device-mechanism evaluation.',
       specs: [
         { label: 'Format', value: '3 mL pre-filled pen' },
-        { label: 'Content', value: '21.99 + 19.59 mg' },
-        { label: 'Batch', value: 'BP1701FSR' },
-        { label: 'Verified', value: 'Janoshik' },
-      ],
-      labTestUrl:
-        'https://verify.janoshik.com/tests/163218-ALLUVI_BPC157_TB500_40MG_KIT_EAI125ZEF8TB',
-      janoshik: {
-        fillVolume: '3 mL',
-        batchNumber: 'BP1701FSR',
-        compounds: [
-          { name: 'BPC-157', concentration: '7.33 mg/mL', content: '21.99 mg' },
-          { name: 'TB-500', concentration: '6.53 mg/mL', content: '19.59 mg' },
-        ],
-      },
-      certificate: [
-        '/images/products/bpc-157-tb-500-40mg/janoshik/page1.jpg',
-        '/images/products/bpc-157-tb-500-40mg/janoshik/page2.jpg',
+        { label: 'Compounds', value: 'BPC-157 + TB-500' },
+        { label: 'Strength', value: '20mg + 20mg' },
+        { label: 'Storage', value: 'Refrigerated, 2–8°C' },
       ],
       details: {
         contents: [
@@ -346,37 +341,22 @@ export const products: {
       slug: 'glow-70mg',
       name: 'Glow 70mg',
       price: 100,
+      category: 'aesthetic',
+      format: 'blend',
+      tagline: 'GHK-Cu · BPC-157 · TB-500 blend',
+      strength: '70mg',
+      badge: 'New',
       blurb: '2 × pre-filled research pens',
-      desc: '50mg GHK-Cu + 10mg BPC-157 + 10mg TB-500, batch GL0621XSA.',
-      image: '/images/products/glow-70mg/front.jpg',
-      gallery: [
-        '/images/products/glow-70mg/front.jpg',
-        '/images/products/glow-70mg/pen.jpg',
-        '/images/products/glow-70mg/open.jpg',
-        '/images/products/glow-70mg/uv.jpg',
-      ],
+      desc: '50mg GHK-Cu + 10mg BPC-157 + 10mg TB-500, pre-filled research pens.',
+      image: '/new%20images/products/GLOW%20GHK-CU%20Carton%20with%20Blue%20Pen-3.png',
+      gallery: ['/new%20images/products/GLOW%20GHK-CU%20Carton%20with%20Blue%20Pen-3.png'],
       longDesc:
         'A 70mg Glow formulation supplied in a pre-filled research device, provided exclusively for controlled laboratory R&D applications. Supplied in sealed format to support compound stability analysis, formulation studies, and device-mechanism evaluation.',
       specs: [
         { label: 'Format', value: '2 × pre-filled pens' },
-        { label: 'Content', value: '25.8 / 8.13 / 6.76 mg' },
-        { label: 'Batch', value: 'GL0621XSA' },
-        { label: 'Verified', value: 'Janoshik' },
-      ],
-      labTestUrl:
-        'https://verify.janoshik.com/tests/163217-ALLUVI_GLOW_70MG_KIT_DCL3AJSE4JQP',
-      janoshik: {
-        fillVolume: '3.4 mL',
-        batchNumber: 'GL0621XSA',
-        compounds: [
-          { name: 'GHK-Cu', concentration: '7.59 mg/mL', content: '25.8 mg' },
-          { name: 'BPC-157', concentration: '2.39 mg/mL', content: '8.13 mg' },
-          { name: 'TB-500', concentration: '1.99 mg/mL', content: '6.76 mg' },
-        ],
-      },
-      certificate: [
-        '/images/products/glow-70mg/janoshik/page1.jpg',
-        '/images/products/glow-70mg/janoshik/page2.jpg',
+        { label: 'Compounds', value: 'GHK-Cu + BPC-157 + TB-500' },
+        { label: 'Strength', value: '50mg / 10mg / 10mg' },
+        { label: 'Storage', value: 'Refrigerated, 2–8°C' },
       ],
       details: {
         contents: [
@@ -394,15 +374,15 @@ export const products: {
       slug: 'nad-1000mg',
       name: 'NAD+ 1,000mg',
       price: 140,
+      category: 'longevity',
+      format: 'single',
+      tagline: 'Longevity · 2 × 500mg pens',
+      strength: '1,000mg',
+      badge: 'Limited',
       blurb: '1,000mg for laboratory research',
       desc: '1,000mg NAD+, ISO 9001:2015 with full batch documentation.',
-      image: '/images/products/nad-1000mg/front.jpg',
-      gallery: [
-        '/images/products/nad-1000mg/front.jpg',
-        '/images/products/nad-1000mg/pen.jpg',
-        '/images/products/nad-1000mg/open.jpg',
-        '/images/products/nad-1000mg/uv.jpg',
-      ],
+      image: '/new%20images/products/NAD%2B%20Carton%20and%20Yellow%20Pen-2.png',
+      gallery: ['/new%20images/products/NAD%2B%20Carton%20and%20Yellow%20Pen-2.png'],
       longDesc:
         'NAD+ (Nicotinamide Adenine Dinucleotide) research formulation for laboratory analysis and in vitro studies only. Provided exclusively for controlled laboratory R&D applications.',
       specs: [
@@ -420,12 +400,421 @@ export const products: {
         storage: ['Store refrigerated (2–8°C). Do not freeze.'],
       },
     },
+    {
+      slug: 'mots-c-40mg',
+      name: 'MOTS-C 40mg',
+      // Placeholder — confirm the real price before launch.
+      price: 140,
+      category: 'longevity',
+      format: 'single',
+      tagline: 'Mitochondrial peptide · 4 × 10mg pen',
+      strength: '40mg',
+      badge: 'New',
+      blurb: '40mg pre-filled research pen',
+      desc: '40mg MOTS-C, pre-filled research pen with full batch documentation.',
+      image: '/new%20images/products/MOTS-C%20Carton%20and%20Matching%20Pen-7.png',
+      gallery: ['/new%20images/products/MOTS-C%20Carton%20and%20Matching%20Pen-7.png'],
+      longDesc:
+        'A 40mg MOTS-C (mitochondrial-derived peptide) formulation supplied in a pre-filled research device, provided exclusively for controlled laboratory R&D applications such as cellular-metabolism and in vitro studies.',
+      specs: [
+        { label: 'Format', value: 'Pre-filled pen, 4 × 10mg' },
+        { label: 'Compound', value: 'MOTS-C' },
+        { label: 'Strength', value: '40mg' },
+        { label: 'Storage', value: 'Refrigerated, 2–8°C' },
+      ],
+      details: {
+        contents: [
+          'Each MOTS-C 40mg Research kit includes:',
+          'Pre-filled Research pen (40mg MOTS-C)',
+          'Research information sheet',
+        ],
+        storage: ['Store refrigerated (2–8°C). Do not freeze.'],
+      },
+    },
+    {
+      slug: 'tesamorelin-20mg',
+      name: 'Tesamorelin 20mg',
+      // Placeholder — confirm the real price before launch.
+      price: 120,
+      category: 'recovery',
+      format: 'single',
+      tagline: 'GHRH analogue · 10 × 2mg pen',
+      strength: '20mg',
+      badge: 'New',
+      blurb: '20mg pre-filled research pen',
+      desc: '20mg Tesamorelin, pre-filled research pen with full batch documentation.',
+      image: '/new%20images/products/Tesamorelin%2020mg%20carton%20and%20red%20pen-8.png',
+      gallery: ['/new%20images/products/Tesamorelin%2020mg%20carton%20and%20red%20pen-8.png'],
+      longDesc:
+        'A 20mg Tesamorelin (growth-hormone-releasing hormone analogue) formulation supplied in a pre-filled research device, provided exclusively for controlled laboratory R&D applications such as receptor-binding and in vitro studies.',
+      specs: [
+        { label: 'Format', value: 'Pre-filled pen, 10 × 2mg' },
+        { label: 'Compound', value: 'Tesamorelin' },
+        { label: 'Strength', value: '20mg' },
+        { label: 'Storage', value: 'Refrigerated, 2–8°C' },
+      ],
+      details: {
+        contents: [
+          'Each Tesamorelin 20mg Research kit includes:',
+          'Pre-filled Research pen (20mg Tesamorelin)',
+          'Research information sheet',
+        ],
+        storage: ['Store refrigerated (2–8°C). Do not freeze.'],
+      },
+    },
   ],
 };
 
 // Convenience: look up a product by slug (used by the detail route).
 export const getProduct = (slug: string): Product | undefined =>
   products.items.find((p) => p.slug === slug);
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ *  COMMERCE SURFACES — header, ticker, shop taxonomy, merchandising rails
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/** Scrolling assurance strip pinned above the header. */
+export const ticker = {
+  items: [
+    'Third-party tested by Janoshik Analytical',
+    'Sealed & cold-stored before dispatch',
+    'Full batch documentation with every order',
+    'For research use only',
+  ],
+};
+
+/**
+ * "Why Peptiq" — six assurance cards flanking a centred image. The first three
+ * render in the left column, the rest on the right.
+ *
+ * `mission` and `featured` are unused by the current layout; they are kept for
+ * the single-panel treatment that reads heading + mission on the left and the
+ * three featured titles on the right.
+ */
+export const assurances = {
+  label: 'Why Peptiq',
+  /** Rendered as `title` + `titleAccent`, the accent in brand purple. */
+  title: 'Why Researchers Choose',
+  titleAccent: 'Peptiq.',
+  subtitle: 'Trusted by scientists. Backed by quality. Designed for real research.',
+  // Transparent 1:1 cut-out; the folder name contains spaces, so it is URL-encoded.
+  // Background removed from "why us new22.png" (Magnific) so it floats on the band.
+  image: '/new%20images/why%20us%20new22-cutout.png',
+  imageAlt: 'Laboratory scientist holding a research pen and its carton',
+  cta: { label: 'Browse the range', href: '/shop' },
+  note: 'Janoshik-verified per batch · documentation with every order',
+  /** Footer line of the panel's left column. */
+  mission:
+    'We believe every lab deserves research peptides it can actually verify — independently tested, fully documented, and supplied strictly for research use.',
+  /** The three items (by title) shown in the panel's right column. */
+  featured: ['Verified sourcing', 'Lab-tested purity', 'Documentation included'],
+  items: [
+    {
+      title: 'Verified sourcing',
+      body: 'Direct contracts with certified manufacturers. No grey-market resellers in the chain.',
+    },
+    {
+      title: 'Lab-tested purity',
+      body: 'Every batch independently assayed by Janoshik Analytical before it is listed.',
+    },
+    {
+      title: 'Pre-filled research pens',
+      body: 'Fixed-volume sealed format — no reconstitution or measuring at the bench.',
+    },
+    {
+      title: 'Sealed cold packaging',
+      body: 'Cold-stored, tamper-sealed and accurately labelled before it leaves the shelf.',
+    },
+    {
+      title: 'Documentation included',
+      body: 'The batch-specific certificate of analysis ships with every order, no request needed.',
+    },
+    {
+      title: 'Batch traceability',
+      body: 'Every pen carries a batch number that matches its published Janoshik report.',
+    },
+  ],
+};
+
+export type ShopLine = {
+  key: ProductCategory | 'blend';
+  label: string;
+  blurb: string;
+  /**
+   * Optional, and the opt-in for a PHOTOGRAPHIC tile — set it and `LineRail`
+   * renders the shot behind the label; omit it and the tile stays a plain
+   * lavender gradient. Only lines with a shot worth the space should set it.
+   */
+  image?: string;
+  /** Deep link into the shop with the matching filter pre-applied. */
+  href: string;
+};
+
+/**
+ * Category rail — "Shop by line". Keys match `Product.category`, plus blends.
+ * Tile images are read from a representative product, so they always match
+ * the photo on that product's card.
+ */
+export const lines: { label: string; title: string; cta: string; items: ShopLine[] } = {
+  label: 'SHOP BY LINE',
+  title: 'Every line on the bench.',
+  cta: 'View all',
+  items: [
+    {
+      key: 'metabolic',
+      label: 'Metabolic',
+      blurb: 'Incretin receptor agonists for metabolic pathway research.',
+      image: getProduct('retatrutide-20mg')?.image,
+      href: '/shop?category=metabolic',
+    },
+    {
+      key: 'recovery',
+      label: 'Recovery',
+      blurb: 'Repair and regeneration compounds for tissue-model work.',
+      image: getProduct('tesamorelin-20mg')?.image,
+      href: '/shop?category=recovery',
+    },
+    {
+      key: 'aesthetic',
+      label: 'Skin & Hair',
+      blurb: 'Copper peptide and blend formulations for dermal research.',
+      image: getProduct('glow-70mg')?.image,
+      href: '/shop?category=aesthetic',
+    },
+    {
+      key: 'longevity',
+      label: 'Longevity',
+      blurb: 'Cofactor compounds for cellular-metabolism studies.',
+      image: getProduct('mots-c-40mg')?.image,
+      href: '/shop?category=longevity',
+    },
+    {
+      key: 'blend',
+      label: 'Blends',
+      blurb: 'Multi-compound pens supplied as a single sealed unit.',
+      image: getProduct('bpc-157-tb-500-40mg')?.image,
+      href: '/shop?format=blend',
+    },
+  ],
+};
+
+/**
+ * Merchandising rails. Both are explicit editorial slug lists rather than
+ * computed ordering, so the homepage never silently reshuffles when a product
+ * is added.
+ */
+export const merch = {
+  bestsellers: {
+    label: 'LOVED BY THE BENCH',
+    title: 'Bestsellers',
+    cta: 'Shop all',
+    ctaHref: '/shop?sort=bestsellers',
+    slugs: [
+      'bpc-157-tb-500-40mg',
+      'retatrutide-20mg',
+      'tirzepatide-40mg',
+      'glow-70mg',
+      'retatrutide-40mg',
+      'nad-1000mg',
+    ],
+  },
+  newArrivals: {
+    label: 'JUST LANDED',
+    title: 'New arrivals',
+    subtitle:
+      'The latest additions to the range — new batches, new concentrations, every one independently verified.',
+    cta: 'Shop all',
+    ctaHref: '/shop?sort=new',
+    slugs: ['retatrutide-40mg', 'glow-70mg', 'nad-1000mg'],
+  },
+};
+
+/**
+ * Product spotlight under the hero — an auto-advancing slider. Each slide's
+ * price is read from the live product by `slug`, so only the editorial copy
+ * lives here. No star rating — see `Product.rating`.
+ *
+ * Every `image` must be a transparent square cut-out: it floats directly on the
+ * section colour with no panel behind it.
+ */
+export const spotlight = {
+  /** Milliseconds each slide stays up before advancing. */
+  interval: 6000,
+  proof: 'Independently verified batch',
+  supplyNote: 'Research Supply Programme · 3 monthly deliveries',
+  footnote: 'Cold-chain dispatch · Certificate of analysis with every order',
+  slides: [
+    // First entry is the slide shown on load.
+    {
+      slug: 'mots-c-40mg',
+      badge: 'New arrival',
+      title: 'MOTS-C',
+      kicker: 'the mitochondrial peptide.',
+      image: '/new%20images/new%20arrival/Alluvi%20MOTS-C%20carton%20and%20pen%2C%20amethyst%20splash-4.png',
+      chips: ['40mg', '4 × 10mg pen', 'Janoshik tested'],
+      cta: 'Shop MOTS-C',
+    },
+    {
+      slug: 'tesamorelin-20mg',
+      badge: 'New arrival',
+      title: 'Tesamorelin',
+      kicker: 'the GHRH analogue.',
+      image: '/new%20images/new%20arrival/Alluvi%20Tesamorelin%20Duo%2C%20Ruby%20Splash-7.png',
+      chips: ['20mg', '10 × 2mg pen', 'Janoshik tested'],
+      cta: 'Shop Tesamorelin',
+    },
+  ],
+};
+
+/** Full-screen site menu opened from the header's MENU button. */
+export const menu = {
+  closeLabel: 'Close',
+  columns: [
+    {
+      title: 'Shop by line',
+      links: lines.items.map((l) => ({ label: l.label, href: l.href })),
+    },
+    {
+      title: 'Laboratory',
+      links: [
+        { label: 'Lab reports', href: '/shop' },
+        { label: 'How we verify', href: '/#process' },
+        { label: 'Contact', href: '/#contact' },
+      ],
+    },
+    {
+      title: 'Client care',
+      links: [
+        { label: 'Account', href: '/login' },
+        { label: 'Wishlist', href: '/wishlist' },
+        { label: 'Track order', href: '/track-order' },
+        { label: 'Cart', href: '/cart' },
+      ],
+    },
+  ],
+  featured: {
+    label: 'NEW BATCH',
+    slug: merch.newArrivals.slugs[0],
+    meta: 'Janoshik verified',
+  },
+};
+
+/** Resolve a merchandising slug list to products, dropping any stale slugs. */
+export const getProducts = (slugs: string[]): Product[] =>
+  slugs.map(getProduct).filter((p): p is Product => Boolean(p));
+
+/* ── Recurring supply programme ──────────────────────────────────────────── */
+
+/** Percentage saved on each delivery when a line is enrolled. */
+export const SUPPLY_DISCOUNT = 0.15;
+
+/** Deliveries in one enrolment term. */
+export const SUPPLY_DELIVERIES = 3;
+
+export const supply = {
+  label: 'RECURRING SUPPLY',
+  name: 'Research Supply Programme',
+  /** Short form used on product cards: "Save $15 with Supply". */
+  shortName: 'Supply',
+  title: 'Subscribe to the Research Supply Programme.',
+  /** Homepage banner copy (SupplyProgramme). */
+  bannerTitle: 'Subscribe & save on your research supply',
+  tagline: 'Because consistent research starts with a consistent supply.',
+  // AI-generated still life (Magnific): Peptiq cartons and pens, product on the right.
+  // Product sits on the right of the frame; the folder name contains a space.
+  image: '/new%20images/sub.png',
+  body: 'Your bench supply, delivered with each verified batch. Choose any line, receive it monthly for three deliveries, and save 15% on every one — with complimentary cold-chain shipping on everything else in your order.',
+  primaryCta: { label: 'How it works', href: '#supply' },
+  secondaryCta: { label: 'Choose a line', href: '/shop' },
+  benefits: [
+    {
+      index: '01',
+      title: '15% off every delivery',
+      body: 'Enrol any line for three monthly deliveries and save on each one.',
+    },
+    {
+      index: '02',
+      title: 'Complimentary cold-chain',
+      body: 'Insulated shipping on every order containing a Supply enrolment, no minimum spend.',
+    },
+    {
+      index: '03',
+      title: 'Priority batch allocation',
+      body: 'Members are allocated from each verified batch before it is listed publicly.',
+    },
+    {
+      index: '04',
+      title: 'Reports on dispatch',
+      body: 'The batch-specific certificate of analysis is emailed the moment your order ships.',
+    },
+  ],
+};
+
+/** Per-delivery price and saving for an enrolled line. */
+export const supplyPricing = (price: number) => {
+  const saving = Math.round(price * SUPPLY_DISCOUNT * 100) / 100;
+  return { saving, perDelivery: Math.round((price - saving) * 100) / 100 };
+};
+
+/* ── Preparation process ─────────────────────────────────────────────────── */
+
+export const process = {
+  label: 'THREE DELIBERATE STEPS',
+  eyebrow: 'Three deliberate steps',
+  title: 'How each pen is prepared.',
+  subtitle:
+    'Three deliberate steps between the lab bench and the sealed pen — so nothing about the product is left to chance.',
+  cta: { label: 'Browse verified batches', href: '/shop' },
+  // AI-generated (Magnific): scientist at an HPLC screen, subject on the right.
+  image: '/images/process-lab-dusk.jpg',
+  imageAlt: 'Scientist reviewing a chromatography result beside HPLC instruments',
+  /** Small chip on the photo. */
+  status: 'Every batch assayed by Janoshik',
+  steps: [
+    {
+      index: 'Step 01',
+      title: 'Source',
+      body: 'Direct contracts with certified manufacturers. No grey-market resellers in the chain.',
+      image: '/images/purification-seo.webp',
+    },
+    {
+      index: 'Step 02',
+      title: 'Verify',
+      body: 'Independent purity and concentration checks on every batch before it touches an order.',
+      image: '/images/api-seo.webp',
+    },
+    {
+      index: 'Step 03',
+      title: 'Seal',
+      body: 'Cold-stored and tamper-sealed, with accurate labelling on every pen before it leaves the shelf.',
+      image: '/images/cold-chain-seo.webp',
+    },
+  ],
+};
+
+/* ── Shop controls ───────────────────────────────────────────────────────── */
+
+export const shopControls = {
+  categories: [
+    { value: 'all', label: 'All' },
+    { value: 'metabolic', label: 'Metabolic' },
+    { value: 'recovery', label: 'Recovery' },
+    { value: 'aesthetic', label: 'Skin & Hair' },
+    { value: 'longevity', label: 'Longevity' },
+  ],
+  sorts: [
+    { value: 'featured', label: 'Featured' },
+    { value: 'bestsellers', label: 'Bestsellers' },
+    { value: 'new', label: 'New in' },
+    { value: 'price-asc', label: 'Price: low to high' },
+    { value: 'price-desc', label: 'Price: high to low' },
+  ],
+  formats: [
+    { value: 'single', label: 'Single compound' },
+    { value: 'blend', label: 'Blend' },
+  ],
+  searchPlaceholder: 'Search compounds, strengths or blends…',
+};
 
 export const services = {
   index: '04',
@@ -539,10 +928,39 @@ export const gallery = {
   ],
 };
 
+/** Philosophy banner (Philosophy.tsx). */
+export const philosophy = {
+  title: 'A new standard for research peptides: verified and documented',
+  body: [
+    'Peptiq is about research you can trust — independently tested compounds, sealed pre-filled pens, and documentation that ships with every order.',
+    'We believe research supply should support the work, not complicate it — pairing rigorous third-party testing with a clean, traceable format.',
+  ],
+  cta: { label: 'More about Peptiq', href: '#story' },
+  // Transparent cut-out; the folder name contains a space, so it is URL-encoded.
+  image: '/new%20images/tessa-without%20bg.png',
+  imageAlt: 'Tesamorelin 20mg carton and research pen',
+};
+
+/**
+ * Featured review band (FeaturedReview.tsx): a big headline, two product
+ * thumbnails, a lab photo, and one quote pulled from `news.items` by index so
+ * the words are never duplicated here.
+ */
+export const featuredReview = {
+  title: 'Purity that keeps up with your research',
+  /** Product slugs for the two small thumbnails. */
+  thumbs: ['retatrutide-40mg', 'mots-c-40mg'],
+  // AI-generated (Magnific): researcher inspecting an unbranded white pen.
+  photo: '/images/featured-review-lab.jpg',
+  photoAlt: 'Researcher inspecting a sealed research pen at the lab bench',
+  /** Which `news.items` entry to feature. */
+  reviewIndex: 1,
+};
+
 export const news = {
   index: '06',
   label: 'TESTIMONIALS',
-  title: 'What our customers say',
+  title: 'The quality our research community relies on',
   body:
     'Verified reviews from research customers — focused on packaging quality, batch documentation, presentation, order accuracy, and support responsiveness. Every review is from a confirmed order.',
   // Aggregate trust signal shown beside the heading.
@@ -556,7 +974,7 @@ export const news = {
       org: 'United Kingdom',
       rating: 5,
       tag: 'Verified purchase',
-      avatar: '/images/review1-seo.webp',
+      avatar: '/images/review2-seo.webp',
     },
     {
       quote:
@@ -566,7 +984,7 @@ export const news = {
       org: 'Research lab',
       rating: 5,
       tag: 'Repeat customer',
-      avatar: '/images/review2-seo.webp',
+      avatar: '/images/review1-seo.webp',
     },
     {
       quote:
@@ -576,7 +994,7 @@ export const news = {
       org: 'Research customer',
       rating: 5,
       tag: 'Verified purchase',
-      avatar: '/images/review3-seo.webp',
+      avatar: '/images/review4-seo.webp',
     },
     {
       quote:
@@ -586,9 +1004,59 @@ export const news = {
       org: 'United Kingdom',
       rating: 5,
       tag: 'Verified purchase',
-      avatar: '/images/review4-seo.webp',
+      avatar: '/images/review3-seo.webp',
     },
   ],
+};
+
+/**
+ * Video review reel — portrait clips from verified buyers, shown as a rail.
+ *
+ * ── On `video` being optional ──────────────────────────────────────────────
+ * `poster` is required and is what actually renders. `video` is optional, and
+ * the play control appears ONLY on items that have one. That is deliberate: a
+ * play button on a card with nothing behind it is a broken promise, so until
+ * real clips exist the section degrades honestly into a photo wall.
+ *
+ * Only one clip ships with the repo today, so only the first item carries a
+ * `video`. To add the rest: drop the files in `public/videos/` and point each
+ * item's `video` at one — no component changes needed.
+ *
+ * The people and photographs are the same verified buyers as `news.items`;
+ * `meta` is their real role from that list, not an invented order date.
+ */
+export const reviewReel = {
+  pill: '2,400+ verified reviews',
+  title: 'Real labs. Real batches.',
+  subtitle: 'What our research customers say about the paperwork.',
+  // Clips live in public/new images/videos/ — the folder names contain spaces
+  // (and some filenames brackets), so every path is URL-encoded.
+  items: [
+    {
+      name: 'Daniel K.',
+      meta: 'Verified buyer',
+      poster: '/images/review2-seo.webp',
+      video: '/new%20images/videos/bedroom_window_stretch_213-video%20(2).mp4',
+    },
+    {
+      name: 'Sophie R.',
+      meta: 'Repeat customer',
+      poster: '/images/review1-seo.webp',
+      video: '/new%20images/videos/calisthenics_bars_park_217-video.mp4',
+    },
+    {
+      name: 'Marcus T.',
+      meta: 'Verified buyer',
+      poster: '/images/review4-seo.webp',
+      video: '/new%20images/videos/foam_roll_lounge_215-video%20(1).mp4',
+    },
+    {
+      name: 'Priya N.',
+      meta: 'Research customer',
+      poster: '/images/review3-seo.webp',
+      video: '/new%20images/videos/terrace_cafe_afternoon_229-video.mp4',
+    },
+  ] as { name: string; meta: string; poster: string; video?: string }[],
 };
 
 export const contact = {
@@ -606,6 +1074,17 @@ export const contact = {
   ],
   message: { name: 'message', label: 'How can we help with your R&D programme?' },
   submit: 'Send enquiry',
+
+  /* ── Sign-up layout (Contact.tsx) ───────────────────────────────────────── */
+  statement:
+    'Advancing laboratory research with independently verified peptides — tested, documented and supplied for controlled R&D.',
+  emailPlaceholder: 'Enter your email',
+  join: 'Join',
+  joinSuccess: 'You’re on the list — watch your inbox for the next batch drop.',
+  direct: 'Prefer to talk to the research team?',
+  // AI-generated portrait (Magnific), background removed. No third-party branding.
+  image: '/images/contact-scientist.png',
+  imageAlt: 'Laboratory scientist holding a tablet',
 };
 
 export const resources = {
@@ -624,10 +1103,10 @@ export const footer = {
     {
       title: 'Company',
       links: [
+        { label: 'Shop', href: '/shop' },
         { label: 'About', href: '/#story' },
-        { label: 'Why Peptiq', href: '/#innovation' },
-        { label: 'Quality protocol', href: '/#sustainability' },
-        { label: 'Services', href: '/#services' },
+        { label: 'Why Peptiq', href: '/#assurances' },
+        { label: 'Quality protocol', href: '/#process' },
         { label: 'Testimonials', href: '/#news' },
       ],
     },
@@ -639,7 +1118,7 @@ export const footer = {
         { label: 'BPC-157 & TB-500 40mg', href: '/products/bpc-157-tb-500-40mg' },
         { label: 'Glow 70mg', href: '/products/glow-70mg' },
         { label: 'NAD+ 1,000mg', href: '/products/nad-1000mg' },
-        { label: 'Browse all', href: '/#products' },
+        { label: 'Browse all', href: '/shop' },
       ],
     },
     {
@@ -655,14 +1134,16 @@ export const footer = {
       title: 'Support',
       links: [
         { label: 'Contact', href: '/#contact' },
-        { label: 'Verify a batch', href: '/#innovation' },
-        { label: 'For laboratories', href: '/#services' },
+        { label: 'Verify a batch', href: '/#process' },
+        { label: 'For laboratories', href: '/#contact' },
       ],
     },
   ],
   legal: [
+    { label: 'Press Release', href: '/policies/press-release' },
     { label: 'Privacy Policy', href: '/policies/privacy-policy' },
     { label: 'Refund Policy', href: '/policies/refund-policy' },
+    { label: 'Shipping Policy', href: '/policies/shipping-policy' },
     { label: 'Terms of Service', href: '/policies/terms-of-service' },
   ],
 };
@@ -687,30 +1168,111 @@ export type Policy = {
 export const policies: { items: Policy[] } = {
   items: [
     {
+      slug: 'press-release',
+      title: 'Press Release',
+      summary:
+        'An official public statement from Peptiq on our research focus, distribution channels, and commitment to consumer safety.',
+      updated: '31 July 2026',
+      sections: [
+        {
+          heading: 'Official public statement',
+          body: [
+            `${brand.name} is a research and development supplier of laboratory-grade peptide compounds. This statement sets out, in plain terms, how we operate, how we distribute our products, and how researchers can verify that they are dealing with the genuine ${brand.name}.`,
+          ],
+        },
+        {
+          heading: 'No social-media sales or promotion',
+          body: [
+            `${brand.name} operates exclusively through its official website. We do not sell, promote, or take payments through TikTok, Instagram, Facebook, WhatsApp, Telegram, or any other social platform.`,
+            `Any account, page, or individual claiming to represent ${brand.name} on social media is unauthorised and is not affiliated with us. Please do not make payments to, or share personal details with, anyone contacting you through social media in our name — report it and verify any communication directly through ${brand.email}.`,
+          ],
+        },
+        {
+          heading: 'Research-use focus',
+          body: [
+            'Every compound we supply is manufactured and sold strictly for laboratory research and development. Our products are not medicines, are not intended for human or veterinary use, and carry no therapeutic claims. This distinguishes research-only suppliers from the marketing and sale of medicinal products.',
+          ],
+        },
+        {
+          heading: 'Independent verification',
+          body: [
+            'We do not ask researchers to take purity or content on trust. Research pens are randomly pulled from every production batch and sent for independent, third-party analysis by Janoshik Analytical. Certificates of analysis are published per batch and can be verified against the batch code on your packaging.',
+          ],
+        },
+        {
+          heading: 'Consumer safety',
+          body: [
+            'We strongly advise against purchasing injectable research materials through social media, unverified resellers, or marketplaces outside our official domain. Counterfeit or mislabelled products sold under our name harm researchers and the broader research community, and we actively monitor and report misuse of our branding.',
+          ],
+        },
+        {
+          heading: 'Contact us',
+          body: [`For any press or media enquiries, please contact: ${brand.email}`],
+        },
+      ],
+    },
+    {
       slug: 'privacy-policy',
       title: 'Privacy Policy',
       summary:
         'How Peptiq collects, uses, stores and protects the personal data of researchers and account holders.',
-      updated: '2 July 2026',
+      updated: '31 July 2026',
       sections: [
+        {
+          heading: 'Introduction',
+          body: [
+            `This Privacy Policy explains how ${brand.name} ("we", "us", "our") collects, uses, and protects your personal information when you visit our website or place an order.`,
+            'We are committed to safeguarding your privacy and to handling your data fairly, transparently, and securely.',
+          ],
+        },
         {
           heading: 'Data we collect',
           body: [
-            'We collect the details you provide when you create an account or place an order — including your name, email address, date of birth, nationality, country of residence, contact address, and order history.',
-            'We also collect limited technical data (such as device and browser information) needed to operate the site securely. Your cart and session are stored locally in your browser.',
+            'We collect the details you provide when you create an account or place an order — including your name, email address, contact and delivery address, and order history.',
+            'We also collect limited technical data (such as device, browser, and IP information) needed to operate the site securely. Your cart and session are stored locally in your browser.',
           ],
         },
         {
           heading: 'How we use your data',
           body: [
-            'Your data is used solely to fulfil orders, verify eligibility for research-use-only supply, provide customer support, and meet our legal and record-keeping obligations.',
-            'We do not sell your personal data. We share it only with the processors strictly required to fulfil your order — for example payment providers.',
+            'Your data is used solely to process and fulfil orders, provide customer support and order updates, verify eligibility for research-use-only supply, respond to enquiries, improve website functionality, and meet our legal and record-keeping obligations.',
+            'We do not sell or rent your personal data to third parties.',
+          ],
+        },
+        {
+          heading: 'Third-party sharing',
+          body: [
+            'We only share data with trusted third-party providers who help us operate the business — such as payment processors, couriers and logistics providers, and website or IT service platforms. Every third party is required to process your data securely and only as instructed by us.',
+          ],
+        },
+        {
+          heading: 'Data security',
+          body: [
+            'We implement appropriate technical and organisational measures to protect your personal information, including encrypted connections, restricted access to data by authorised staff only, and regular reviews of our security practices.',
           ],
         },
         {
           heading: 'Your rights',
           body: [
-            'You may request access to, correction of, or deletion of your personal data at any time. To exercise any of these rights, contact us at research@peptiq.org.',
+            `You have the right to access the personal data we hold on you, request corrections to inaccurate information, request deletion of your data where appropriate, object to certain processing activities, and withdraw consent at any time. To exercise any of these rights, contact us at ${brand.email}.`,
+          ],
+        },
+        {
+          heading: 'Cookies',
+          body: [
+            'We use cookies to keep you signed in, remember your cart, and understand how the site is used. You can manage or disable cookies in your browser settings at any time.',
+          ],
+        },
+        {
+          heading: 'Data retention',
+          body: [
+            'We retain your data only for as long as necessary to fulfil the purposes outlined in this policy, including legal, accounting, or regulatory record-keeping obligations.',
+          ],
+        },
+        {
+          heading: 'Policy updates',
+          body: [
+            'We may update this Privacy Policy from time to time. Any changes will be posted on this page with a new "last updated" date.',
           ],
         },
       ],
@@ -720,24 +1282,117 @@ export const policies: { items: Policy[] } = {
       title: 'Refund Policy',
       summary:
         'The conditions under which returns, replacements and refunds are offered on Peptiq research compounds.',
-      updated: '2 July 2026',
+      updated: '31 July 2026',
       sections: [
         {
-          heading: 'Damaged or incorrect items',
+          heading: 'Research-use products',
           body: [
-            'If your order arrives damaged, incomplete, or is not what you ordered, contact us within 7 days of receipt at research@peptiq.org with your order number and photographs. We will arrange a replacement or full refund.',
+            `All items sold by ${brand.name}, including research pens and formulations, are intended strictly for laboratory research and development. They are not intended for human consumption, diagnosis, or treatment. By purchasing, you agree to these terms.`,
           ],
         },
         {
-          heading: 'Seal integrity',
+          heading: 'Returns eligibility',
           body: [
-            'Because our compounds are supplied for controlled laboratory research, opened or seal-broken research units cannot be returned, except where a fault is confirmed on unopened stock.',
+            'Due to the sensitive nature of our products and to maintain quality assurance, we do not accept returns on opened or used items. Only unopened, unused items in their original, seal-intact condition may be considered for return.',
           ],
         },
         {
-          heading: 'How refunds are issued',
+          heading: 'Return window',
           body: [
-            'Approved refunds are returned to the original payment method within 5–10 business days of confirmation.',
+            'You may request a return within 7 days of delivery. If more than 7 days have passed since your order was received, we are unfortunately unable to offer a refund or exchange.',
+          ],
+        },
+        {
+          heading: 'Non-returnable items',
+          body: [
+            'We are unable to accept returns for: opened or used items; products not stored correctly (for example, not kept refrigerated); items not in their original packaging; and returns requested more than 7 days after delivery.',
+          ],
+        },
+        {
+          heading: 'Reporting a damaged or incorrect order',
+          body: [
+            `If your order arrives damaged, incomplete, or is not what you ordered, contact us within 48 hours of delivery at ${brand.email} with your order number, a description of the issue, and supporting photographs.`,
+          ],
+        },
+        {
+          heading: 'Return approval',
+          body: [
+            'Once we receive your request, we will assess it and notify you of the outcome. If approved, we will issue return instructions. Return postage is the customer’s responsibility unless the error was ours.',
+          ],
+        },
+        {
+          heading: 'Refund processing',
+          body: [
+            'Approved refunds are returned to your original payment method within 5–10 business days of confirmation.',
+          ],
+        },
+        {
+          heading: 'Delayed refunds',
+          body: [
+            `If you have not received your refund after 10 business days, please first check with your bank, then contact us at ${brand.email} for assistance.`,
+          ],
+        },
+      ],
+    },
+    {
+      slug: 'shipping-policy',
+      title: 'Shipping Policy',
+      summary:
+        'How Peptiq orders are processed, dispatched, tracked, and delivered.',
+      updated: '31 July 2026',
+      sections: [
+        {
+          heading: 'Dispatch time',
+          body: [
+            'Orders placed and paid for before 3pm (UK time) on working days are typically dispatched the same day. Orders received after 3pm, or on weekends and public holidays, are dispatched the next working day.',
+          ],
+        },
+        {
+          heading: 'Shipping carriers',
+          body: [
+            'We use tracked and signed-for courier services depending on destination, weight, and service availability. Once your order has shipped, you will receive tracking information by email.',
+          ],
+        },
+        {
+          heading: 'Delivery times',
+          body: [
+            'UK orders are typically delivered the next working day after dispatch. International orders vary by location and customs handling, but usually arrive within 3–10 working days.',
+          ],
+        },
+        {
+          heading: 'Shipping fees',
+          body: [
+            'Shipping costs are calculated based on your location and parcel weight, and shown at checkout before you pay. We occasionally run free-shipping promotions.',
+          ],
+        },
+        {
+          heading: 'Order tracking',
+          body: [
+            'All shipments include tracking. You will receive a tracking number by email once your parcel leaves our fulfilment centre — you can also look up your order at any time on our Track Order page.',
+          ],
+        },
+        {
+          heading: 'Failed delivery attempts',
+          body: [
+            'If no one is available to accept the parcel, the courier may leave a card or attempt redelivery. Please follow up with the courier directly using your tracking number.',
+          ],
+        },
+        {
+          heading: 'Customs & import duties',
+          body: [
+            'International buyers are responsible for any applicable customs duties, VAT, or import taxes. These charges are not included in our product or shipping prices.',
+          ],
+        },
+        {
+          heading: 'Delivery issues',
+          body: [
+            `If your parcel is delayed, lost, or arrives damaged, please contact us at ${brand.email} within 72 hours of the expected delivery date, including your order number and tracking details.`,
+          ],
+        },
+        {
+          heading: 'Address accuracy',
+          body: [
+            'Please ensure your delivery details are entered correctly at checkout. We cannot be held responsible for delivery issues resulting from incorrect or incomplete address information.',
           ],
         },
       ],
@@ -747,13 +1402,44 @@ export const policies: { items: Policy[] } = {
       title: 'Terms of Service',
       summary:
         'The terms governing use of the Peptiq website and the purchase of research-use-only compounds.',
-      updated: '2 July 2026',
+      updated: '31 July 2026',
       sections: [
+        {
+          heading: 'General',
+          body: [
+            `You are using the official website of ${brand.name} ("we", "us", "our"). By using this site, you agree to comply with these Terms. If you do not agree with any part of them, please do not use our website or services.`,
+            'We may update these Terms from time to time. Continued use of the website constitutes acceptance of the current Terms.',
+          ],
+        },
+        {
+          heading: 'Age requirement',
+          body: [
+            'By accessing this site, you confirm that you are at least 18 years old and legally able to enter into contracts. Our products and services are intended only for individuals who meet this requirement.',
+          ],
+        },
         {
           heading: 'Research use only',
           body: [
-            'All products supplied by Peptiq are intended strictly for laboratory research and development. They are not for human or veterinary consumption, and must not be administered to humans or animals.',
+            `All products supplied by ${brand.name} are intended strictly for laboratory research and development. They are not for human or veterinary consumption, and must not be administered to humans or animals, nor used to diagnose, treat, cure, or prevent any disease.`,
             'By placing an order you confirm that you are a qualified researcher or organisation and that the products will be handled in accordance with applicable laws and safety standards.',
+          ],
+        },
+        {
+          heading: 'Orders & payment',
+          body: [
+            'All orders are subject to acceptance and availability. We reserve the right to refuse or cancel any order at our discretion. Payment must be made in full, using one of the payment methods offered at checkout, before an order is dispatched.',
+          ],
+        },
+        {
+          heading: 'Dispatch & delivery',
+          body: [
+            'We aim to dispatch orders promptly in line with our Shipping Policy. Delivery timelines are estimates, not guarantees, and we are not liable for delays caused by couriers or other factors outside our control.',
+          ],
+        },
+        {
+          heading: 'Refunds & returns',
+          body: [
+            'Due to the nature of our products, returns are accepted only for items that are unopened, unused, and in their original condition. Opened or tampered-with items are non-refundable. See our Refund Policy for full details.',
           ],
         },
         {
@@ -763,9 +1449,33 @@ export const policies: { items: Policy[] } = {
           ],
         },
         {
+          heading: 'Disclaimer',
+          body: [
+            `All products are sold solely for laboratory research and development. ${brand.name} does not accept or condone misuse, including but not limited to human consumption, veterinary use, or resale.`,
+          ],
+        },
+        {
           heading: 'Limitation of liability',
           body: [
-            'Peptiq is not liable for any misuse of its products or for outcomes arising from handling that falls outside documented laboratory research practice. Nothing in these terms limits liability that cannot be excluded by law.',
+            `${brand.name} is not liable for any misuse of its products, or for outcomes arising from handling that falls outside documented laboratory research practice. By using this site, you agree to indemnify and hold harmless ${brand.name} and its affiliates from claims, damages, or liabilities arising from product use or misuse. Nothing in these Terms limits liability that cannot be excluded by law.`,
+          ],
+        },
+        {
+          heading: 'Account responsibility',
+          body: [
+            'If you create an account on our website, you are responsible for maintaining the confidentiality of your log-in credentials. All activity conducted under your account is your responsibility.',
+          ],
+        },
+        {
+          heading: 'Intellectual property',
+          body: [
+            `All trademarks, logos, and content displayed on our website are owned or licensed by ${brand.name}. You may not reproduce, distribute, or commercially exploit any content without our prior written consent.`,
+          ],
+        },
+        {
+          heading: 'Governing law',
+          body: [
+            'These Terms are governed by and construed in accordance with the laws of England and Wales, without regard to conflict-of-law principles. Any disputes arising will be subject to the exclusive jurisdiction of the courts of England and Wales.',
           ],
         },
       ],

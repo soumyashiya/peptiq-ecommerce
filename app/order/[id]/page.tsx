@@ -91,7 +91,7 @@ export default function OrderPage() {
 
   if (data === undefined) {
     return (
-      <main className="bg-paper pt-32 min-h-screen">
+      <main className="pt-32 min-h-screen">
         <div className="frame flex min-h-[40vh] items-center justify-center">
           <span className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-brand-sky" />
         </div>
@@ -101,10 +101,10 @@ export default function OrderPage() {
 
   if (data === null) {
     return (
-      <main className="bg-paper pt-28 md:pt-32">
+      <main className="pt-28 md:pt-32">
         <div className="frame flex min-h-[60vh] flex-col items-center justify-center py-section-sm text-center">
-          <h1 className="text-h2 font-light tracking-tight">Order not found</h1>
-          <p className="mt-4 max-w-md text-lead font-light text-muted">
+          <h1 className="t-h2">Order not found</h1>
+          <p className="mt-4 max-w-md t-lead text-muted">
             {error ?? "We couldn't find an order with that reference."}
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -147,7 +147,7 @@ export default function OrderPage() {
   const totalQty = items.reduce((n, it) => n + pick(it, ['quantity', 'qty'], num), 0);
 
   return (
-    <main className="bg-mist pt-28 md:pt-32">
+    <main className="pt-28 md:pt-32">
       <div className="frame pb-section-sm md:pb-section">
         {/* Confirmation banner */}
         <motion.div
@@ -172,7 +172,7 @@ export default function OrderPage() {
                 <p className="text-label font-medium uppercase tracking-[0.12em] text-brand-teal">
                   Order confirmed
                 </p>
-                <h1 className="mt-1 text-[clamp(1.5rem,5vw,3.5rem)] font-light leading-[1.05] tracking-tight break-all sm:break-normal">
+                <h1 className="mt-1 t-h2 break-all sm:break-normal">
                   {orderNumber}
                 </h1>
                 <p className="mt-1 text-[13px] text-muted">Placed {formatDate(createdAt)}</p>
@@ -180,7 +180,7 @@ export default function OrderPage() {
             </div>
             <div className="text-left sm:text-right">
               <p className="text-[12px] uppercase tracking-[0.1em] text-muted">Order total</p>
-              <p className="mt-1 text-[clamp(1.75rem,4.5vw,3rem)] font-light tabular-nums">
+              <p className="mt-1 t-h2 tabular-nums">
                 {usd(total)}
               </p>
             </div>

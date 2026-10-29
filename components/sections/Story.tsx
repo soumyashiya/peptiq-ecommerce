@@ -1,103 +1,71 @@
-'use client';
-
 import Image from 'next/image';
 import { story } from '@/lib/content';
-import { SectionTag } from '@/components/ui/SectionTag';
 import { Reveal, RevealItem } from '@/components/ui/Reveal';
-import { RevealMask } from '@/components/ui/RevealMask';
-import { Parallax } from '@/components/ui/Parallax';
 
+/**
+ * About — a full-bleed editorial banner. The photo (`story.bannerImage`, its
+ * subject in the upper half) fills the top of the band and dissolves into the
+ * page lavender toward the bottom; the copy is centred over that fade:
+ * eyebrow, the two-line heading (second line in purple), the founding
+ * paragraph, then a frosted row of the three figures and the CTA.
+ *
+ * The figures are `story.facts` — keep them to numbers the business can back.
+ */
 export function Story() {
   return (
-    <section id="story" className="bg-paper py-section-sm md:py-section">
-      <div className="frame">
-        <SectionTag label={story.label} index={story.index} />
+    <section id="story" className="relative scroll-mt-28 overflow-hidden">
+      {/* Photo, faded into the page colour at its top edge and from the middle down. */}
+      <div className="absolute inset-x-0 top-0 h-[70%] min-h-[420px] md:h-[78%]">
+        <Image
+          src={story.bannerImage}
+          alt={story.bannerAlt}
+          fill
+          sizes="100vw"
+          className="object-cover object-top"
+        />
+        <span
+          aria-hidden
+          // Page colour at both ends: fades in from the section above, out into the copy below.
+          className="absolute inset-0 bg-[linear-gradient(180deg,#F1EBFC_0%,rgba(241,235,252,0.55)_10%,rgba(241,235,252,0)_24%,rgba(241,235,252,0.15)_40%,rgba(241,235,252,0.85)_72%,#F1EBFC_100%)]"
+        />
+      </div>
 
-        <div className="mt-16 grid grid-cols-1 items-center gap-14 lg:mt-24 lg:grid-cols-12 lg:gap-20">
-          {/* Left: editorial text column */}
-          <div className="lg:col-span-6 lg:pr-6">
-            <Reveal>
-              <p className="flex items-center gap-4 text-label font-medium uppercase tracking-[0.12em] text-brand-teal">
-                <span className="h-px w-8 bg-brand-teal" />
-                {story.overline}
+      <div className="frame relative pb-section-sm pt-[clamp(15rem,32vw,26rem)] text-center md:pb-section">
+        <Reveal>
+          <span className="pill-eyebrow">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden />
+            {story.eyebrow}
+          </span>
+          <h2 className="t-h1 mx-auto mt-6 max-w-[18ch] uppercase leading-[0.98] tracking-tight text-ink">
+            {story.headlineA}
+            <br />
+            <span className="text-brand">{story.headlineB}</span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-[40rem] text-body text-ink/70">{story.founding}</p>
+        </Reveal>
+
+        <Reveal
+          stagger={0.08}
+          className="mx-auto mt-10 grid max-w-[46rem] grid-cols-3 divide-x divide-line rounded-[1.25rem] border border-paper/70 bg-paper/55 py-6 backdrop-blur-md"
+        >
+          {story.facts.map((f) => (
+            <RevealItem key={f.label} className="px-3">
+              <p className="figures text-[clamp(1.5rem,3vw,2.25rem)] font-medium leading-none text-ink">{f.value}</p>
+              <p className="mt-2.5 text-[0.6875rem] font-semibold uppercase leading-snug tracking-[0.12em] text-muted">
+                {f.label}
               </p>
-            </Reveal>
+            </RevealItem>
+          ))}
+        </Reveal>
 
-            <Reveal delay={0.08}>
-              <h2 className="mt-7 max-w-[15ch] text-h2 font-light text-balance">
-                {story.title}
-              </h2>
-            </Reveal>
-
-            <Reveal delay={0.16} stagger={0.12}>
-              <div className="mt-8 max-w-prose space-y-5 text-body text-muted">
-                {story.body.map((p) => (
-                  <p key={p.slice(0, 16)}>{p}</p>
-                ))}
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.2}>
-              <a
-                href={story.cta.href}
-                className="group mt-9 inline-flex items-center gap-2 text-[15px] font-medium uppercase tracking-[0.08em] text-brand-teal"
-              >
-                {story.cta.label}
-                <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden>
-                  →
-                </span>
-              </a>
-            </Reveal>
-
-            {/* Signature stats strip */}
-            <Reveal delay={0.1} stagger={0.12} className="mt-14 grid grid-cols-3 gap-px">
-              {story.facts.map((f) => (
-                <RevealItem key={f.label} className="border-t border-line pt-5">
-                  <div className="text-[clamp(2rem,3vw,2.75rem)] font-light leading-none tracking-tight">
-                    {f.value}
-                  </div>
-                  <p className="mt-2 text-[13px] leading-snug text-muted">{f.label}</p>
-                </RevealItem>
-              ))}
-            </Reveal>
-          </div>
-
-          {/* Right: layered two-image composition */}
-          <div className="lg:col-span-6">
-            <div className="relative">
-              {/* faint oversized index as art-direction accent */}
-              <span className="pointer-events-none absolute -top-16 right-0 z-0 select-none text-[12rem] font-light leading-none tracking-tighter text-mist">
-                {story.index}
-              </span>
-
-              <RevealMask className="media relative z-10 aspect-[4/5] w-full">
-                <Parallax speed={-50} className="relative h-[115%] w-full">
-                  <Image
-                    src={story.image}
-                    alt=""
-                    fill
-                    sizes="(max-width:1024px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                </Parallax>
-              </RevealMask>
-
-              {/* secondary image overlapping bottom-left for depth */}
-              <RevealMask
-                delay={0.2}
-                className="media absolute -bottom-10 -left-8 z-20 hidden aspect-square w-[42%] border-4 border-paper shadow-[0_24px_60px_-24px_rgba(0,0,0,0.35)] sm:block"
-              >
-                <Image
-                  src={story.image2}
-                  alt=""
-                  fill
-                  sizes="22vw"
-                  className="object-cover"
-                />
-              </RevealMask>
-            </div>
-          </div>
-        </div>
+        <Reveal delay={0.15} className="mt-9">
+          <a href={story.cta.href} className="btn-primary group">
+            {story.cta.label}
+            <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden>
+              →
+            </span>
+          </a>
+        </Reveal>
       </div>
     </section>
   );

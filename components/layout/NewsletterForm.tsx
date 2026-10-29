@@ -50,8 +50,8 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={onSubmit} noValidate className="mt-6 max-w-sm">
-      <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-paper/40">Newsletter</p>
-      <p className="mt-2 text-[13px] text-paper/55">
+      <p className="text-[0.8125rem] font-semibold text-ink">Newsletter</p>
+      <p className="mt-1.5 text-[0.8125rem] font-normal text-muted">
         Batch drops, storage tips, sourcing notes. No spam.
       </p>
 
@@ -64,23 +64,25 @@ export function NewsletterForm() {
           placeholder="you@lab.com"
           aria-label="Email address for newsletter"
           disabled={state.kind === 'submitting' || state.kind === 'success'}
-          className="h-10 flex-1 rounded-full border border-paper/15 bg-paper/5 px-4 text-[13px] text-paper placeholder:text-paper/40 outline-none transition-colors focus:border-brand-sky focus:bg-paper/10 focus-visible:ring-2 focus-visible:ring-brand-sky disabled:opacity-50"
+          className="h-11 flex-1 rounded-full border border-line bg-mist px-4 text-[0.875rem] text-ink outline-none transition-colors placeholder:text-muted focus:border-brand disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={state.kind === 'submitting' || state.kind === 'success' || !email.trim()}
-          className="h-10 rounded-full bg-brand-sky px-5 text-[12px] font-medium uppercase tracking-[0.08em] text-paper transition-colors hover:bg-brand disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-11 rounded-full bg-brand-lime px-5 text-[0.875rem] font-semibold text-ink transition-colors hover:bg-ink hover:text-paper disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {state.kind === 'submitting' ? '…' : 'Subscribe'}
+          {state.kind === 'submitting' ? 'Subscribing…' : 'Subscribe'}
         </button>
       </div>
 
-      <label className="mt-3 flex cursor-pointer items-start gap-2 text-[12px] text-paper/55">
+      {/* The checkbox is styled globally in globals.css — it used to render as
+          a raw OS widget in system blue, the only off-palette colour on the page. */}
+      <label className="mt-3.5 flex cursor-pointer items-start gap-2.5 text-[0.8125rem] font-normal text-muted">
         <input
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 h-3.5 w-3.5 rounded border-paper/30 bg-transparent text-brand-sky focus:ring-1 focus:ring-brand-sky/40"
+          className="mt-px"
         />
         I agree to receive research updates by email.
       </label>
@@ -98,12 +100,12 @@ export function NewsletterForm() {
       />
 
       {state.kind === 'success' && (
-        <p role="status" className="mt-3 text-[12px] text-brand-sky">
+        <p role="status" className="mt-3 text-[0.8125rem] font-medium text-brand-teal">
           {state.message}
         </p>
       )}
       {state.kind === 'error' && (
-        <p role="alert" className="mt-3 text-[12px] text-brand">
+        <p role="alert" className="mt-3 text-[0.8125rem] font-medium text-brand">
           {state.message}
         </p>
       )}

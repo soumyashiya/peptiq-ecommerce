@@ -25,14 +25,69 @@
     overflow: hidden;
   }
 
+  /*
+   * Lavender is the PAGE colour, not an accent — white is reserved for cards,
+   * panels and inputs sitting on top of it. That inversion is the whole look:
+   * a section that wants to be white should say so, rather than relying on the
+   * page default as every page wrapper used to.
+   *
+   * `brand.wash` (#F1EBFC) is the page tone — pale enough that white panels on
+   * it need body of their own (see `.panel`), which is why it is a separate
+   * token from the deeper `brand.soft` surface.
+   */
+  /*
+   * Horizontal containment.
+   *
+   * `overflow-x: hidden` on `body` alone did not hold: body→viewport overflow
+   * propagation only happens while `html` is `visible`, and Lenis writes its
+   * own overflow onto `html`. The result was a page that really could be
+   * scrolled sideways on mobile — the two marquee tracks (the assurance strip
+   * and the category rail) are several thousand pixels wide, and at 390px the
+   * document scrolled to 1907px.
+   *
+   * `clip` rather than `hidden` is load-bearing: `hidden` would turn the root
+   * into a scroll container and break every `position: sticky` column on the
+   * site (the PDP gallery, the process pitch, the assurance portrait). `clip`
+   * cuts the overflow without creating one.
+   */
+  html {
+    overflow-x: clip;
+  }
+
   body {
-    @apply bg-paper text-ink font-grotesk antialiased;
-    overflow-x: hidden;
+    @apply bg-brand-wash text-ink font-sans antialiased;
+    overflow-x: clip;
+    /* Pre-Safari-16 fallback — those versions lack `clip` but do propagate
+       `hidden` from body, which is enough to contain the marquees there. */
+    @supports not (overflow: clip) {
+      overflow-x: hidden;
+    }
   }
 
   ::selection {
-    background: theme('colors.brand.sky');
-    color: #fff;
+    background: theme('colors.brand.lime');
+    color: theme('colors.ink');
+  }
+
+  /*
+   * Native controls. The shop's sort <select> and the newsletter checkbox were
+   * the only two things on the site rendered by the OS — they arrived in system
+   * blue with system metrics, which read as unfinished next to everything else.
+   */
+  select {
+    @apply appearance-none bg-no-repeat;
+    /* Chevron drawn in `muted`; keep in sync if that token moves. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%236E6880' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 0.9rem center;
+  }
+
+  input[type='checkbox'] {
+    @apply h-[18px] w-[18px] flex-none appearance-none rounded-[5px] border border-ink/25 bg-paper
+           transition-colors duration-200;
+  }
+  input[type='checkbox']:checked {
+    @apply border-ink bg-ink bg-center bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10' viewBox='0 0 12 10' fill='none'%3E%3Cpath d='M1 5.2 4.2 8.4 11 1.6' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   }
 
   /* Respect reduced-motion: kill transforms/animation entrance jumps. */
@@ -57,9 +112,69 @@
     @apply mx-auto w-full max-w-content;
   }
 
+  /* ── Headings ──────────────────────────────────────────────────────────
+     Four classes, one per level. Family + size + weight + leading + tracking
+     travel together, so a heading cannot be half-styled and the scale can be
+     retuned from `tailwind.config.ts` without touching a component.
+
+     The reference sets EVERY headline in its display face — hero, section
+     title and large sub-head alike — and only drops to the body face for
+     incidental UI headings (a drawer title, a dialog title). `.t-h3` follows
+     that split: it is the first level back in Quicksand.
+
+     All four are lowercase-friendly and tightly leaded (1.05), which is the
+     reference's defining move: headline lines nearly touch, so a two-line
+     title reads as one block of colour rather than two separate sentences. */
+  .t-display {
+    @apply font-display text-display font-extrabold;
+  }
+  .t-h1 {
+    @apply font-display text-h1 font-extrabold;
+  }
+  .t-h2 {
+    @apply font-display text-h2 font-extrabold;
+  }
+  /* A heading that is a full sentence — still the display face, one step down
+     in size so a long statement doesn't shout. */
+  .t-h2-sm {
+    @apply font-display text-h2-sm font-extrabold;
+  }
+  .t-h3 {
+    @apply font-sans text-h3 font-bold;
+  }
+
+  /* Lead paragraph under a heading — one step up in size and weight from body
+     copy, which is how the reference separates the two. */
+  .t-lead {
+    @apply text-lead font-medium;
+  }
+
+  /*
+   * ── Section leads ────────────────────────────────────────────────────────
+   * Every section used to open with a tracked-out ALL-CAPS pill above the
+   * heading, which carried no information the heading didn't already carry.
+   * A lead is now just the heading plus, optionally, one sentence — and where
+   * a label IS informative (a count, a category) it sits inline beside the
+   * heading as data rather than floating above it as decoration.
+   */
+  .section-lead {
+    @apply flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10;
+  }
+  .section-lead h2 {
+    @apply max-w-[18ch] font-display text-h2 font-extrabold text-balance;
+  }
+  .section-lead p {
+    @apply mt-3 max-w-prose text-body text-muted;
+  }
+
+  /* Count/meta sitting beside a heading. Mono because it is a figure. */
+  .section-meta {
+    @apply font-mono text-data tabular-nums text-muted;
+  }
+
   /* Numbered section tag: LABEL ............ [0X] */
   .section-tag {
-    @apply flex items-center justify-between border-t border-line pt-6 text-label font-medium uppercase text-brand-teal;
+    @apply flex items-center justify-between border-t border-line pt-6 text-label font-bold uppercase text-brand-teal;
   }
 
   .link-underline {
@@ -73,15 +188,322 @@
     @apply origin-left scale-x-100;
   }
 
+  /* ── Hero ──────────────────────────────────────────────────────────────
+     Values measured from the reference site's live hero, applied verbatim:
+       image   — opacity 1, no filter, no blend (untouched; see Hero.tsx)
+       section — solid black beneath
+       overlay — one bottom-up black scrim, clear by 60%
+     The four stops matter: the long 35%→60% ramp is what keeps the falloff
+     invisible. A two-stop version bands across the photo and reads as a smudge. */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0.35) 35%,
+      rgba(0, 0, 0, 0.12) 60%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    pointer-events: none;
+  }
+
+  /*
+   * Entrance for the whole copy block. This lives on an INNER wrapper, with the
+   * scroll-linked parallax on the element above it — a CSS animation outranks
+   * inline styles for the properties it touches, so sharing one element would
+   * let `both` fill-mode pin opacity and kill the scroll fade.
+   */
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    animation: heroReveal 800ms ease-out both;
+  }
+
+  @keyframes heroReveal {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-content {
+      animation: none;
+    }
+  }
+
+  .hero-button {
+    transition:
+      transform 250ms ease,
+      background-color 250ms ease;
+  }
+
+  .hero-button:hover {
+    transform: translateY(-2px);
+  }
+
+  /* ── Surfaces ──────────────────────────────────────────────────────────
+     Three surfaces, three jobs. They exist so that six consecutive sections
+     stop rendering as one repeated shape:
+
+       .panel      white card — PRODUCTS and genuine panels only
+       .rule-list  hairline-ruled list — content that is a list
+       .data-block deep surface for figures — assay/COA readouts
+
+     If you are about to wrap a title and a paragraph in `.panel`, check it
+     isn't really a `.rule-list` row. Boxes were the default here and that is
+     what made the page look templated. */
+
+  .panel {
+    @apply rounded-card border border-line bg-paper;
+  }
+
+  /* ── Frosted glass ─────────────────────────────────────────────────────
+     Fill and blur only — no outline:
+
+       background        rgba(255,255,255,0.5)
+       border-radius     18px
+       backdrop-filter   saturate(1.8) blur(20px)
+
+     The edge is deliberately absent. Without an outline the panel reads as a
+     soft pane of light rather than as a box, which is cleaner but makes one
+     thing load-bearing: the panel MUST sit on a saturated surface (`.band`
+     below). Translucent white over the pale page wash is nearly invisible, so
+     with no border to draw the edge there would be nothing to see at all.
+
+     Use `.glass` for anything floating on a band. `.panel` (solid white,
+     grey hairline) stays the right surface for things that sit on the page
+     rather than on a band. */
+  .glass {
+    @apply rounded-[18px] bg-paper/50 [backdrop-filter:saturate(1.8)_blur(20px)];
+  }
+
+  /*
+   * Saturated lavender section band. `brand.soft` (#D2BFFC) was already in the
+   * palette but was only ever used for small tiles — on the reference it is
+   * the colour whole sections are built on, and it is what stops the page
+   * reading as washed out. Content on a band is `text-ink`; `.glass` panels
+   * and `.btn-primary` are both tuned for it.
+   */
+  .band {
+    @apply bg-brand-soft text-ink;
+  }
+
+  /*
+   * `.card-soft` predates the surfaces above. It is now the frosted treatment,
+   * so the existing call sites pick the new look up for free.
+   */
+  .card-soft {
+    @apply glass p-6;
+  }
+
+  /*
+   * A ruled list. Rows are separated by hairlines rather than wrapped in
+   * boxes, so a six-item list reads as one object instead of six.
+   */
+  /*
+   * Rules and body copy here use ink at low alpha rather than the `line` and
+   * `muted` tokens, because a ruled list appears both on the pale page wash
+   * AND on a `.band`. `line` (#E7E0F4) is LIGHTER than the band, so it would
+   * flip from a hairline into a highlight halfway down the page, and `muted`
+   * (#6E6880) only reaches ~4:1 against the band. Ink at low alpha darkens
+   * whatever is underneath it, so it reads the same on both.
+   */
+  .rule-list {
+    @apply border-t border-ink/10;
+  }
+  .rule-row {
+    @apply grid gap-x-8 gap-y-2 border-b border-ink/10 py-6 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:py-7;
+  }
+  .rule-row > h3 {
+    @apply text-h3 font-bold text-ink;
+  }
+  .rule-row > p {
+    @apply max-w-prose text-body text-ink/65;
+  }
+
+  /* Deep surface for a block of figures. */
+  .data-block {
+    @apply rounded-card bg-ink text-paper;
+  }
+
+  /* Primary action: lime pill with ink text. Lime fails contrast against white,
+     so `text-ink` here is load-bearing, not a style choice.
+
+     The 2px ink border is the detail that makes this button read as an object
+     rather than a coloured rectangle — measured off the reference, which sets
+     `border: 2px solid #1A1A1A` on a 50px-radius lime pill at 16px/36px
+     padding. Without it the lime dissolves into a light background.
+
+     Hover lifts rather than inverting to ink: with a 2px ink border, filling
+     the button with ink would erase its own outline. */
+  /* Matched 1:1 to the hero's primary button (Hero.tsx) — 1.5px ink border,
+     15px/36px padding, 13→14px semibold caps at 0.06em — so every section's
+     call to action is the same object as the one in the hero. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-full border-[1.5px] border-ink bg-brand-lime
+           px-9 py-[15px] text-[13px] font-semibold uppercase tracking-[0.06em] text-ink
+           transition-[transform,background-color,box-shadow] duration-300
+           hover:-translate-y-0.5 hover:bg-paper hover:shadow-[0_12px_26px_-12px_rgba(14,14,16,0.5)]
+           md:text-[14px];
+  }
+
+  /* Secondary action: outlined pill, same metrics as the primary so the two
+     sit level when they appear side by side. */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2.5 rounded-full border-[1.5px] border-ink/25
+           px-9 py-[15px] text-[13px] font-semibold uppercase tracking-[0.06em] text-ink
+           transition-[transform,border-color,background-color] duration-300
+           hover:-translate-y-0.5 hover:border-ink hover:bg-ink hover:text-paper
+           md:text-[14px];
+  }
+
+  /* Pill label above a heading (icon + text). Same frosted material as the
+     panels, outline included — which is to say, none. */
+  .pill-eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full bg-paper/50
+           px-5 py-2.5 text-label font-bold uppercase text-ink/70
+           [backdrop-filter:saturate(1.8)_blur(20px)];
+  }
+
+  /* Inline meta chip — a strength, a format, a count. */
+  .meta-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-paper/80 px-3 py-1
+           text-micro font-semibold text-muted;
+  }
+
+  /* Lime rounded-square icon holder. Matches the reference exactly: lime is
+     the accent that punctuates the frosted panels, and the squircle is what
+     keeps it from reading as another pill. */
+  .icon-chip {
+    @apply grid h-10 w-10 flex-none place-items-center rounded-[12px] bg-brand-lime text-ink;
+  }
+
+  /* Lime marker for an independently verified claim. */
+  .verified-mark {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-brand-lime px-2.5 py-1
+           text-[0.6875rem] font-bold text-ink;
+  }
+
+  /* Ordinal for a genuine sequence — small, as a step label rather than as the
+     76px ghosted numeral that used to dwarf each step's own title. */
+  .step-numeral {
+    @apply select-none font-mono text-data font-medium tabular-nums text-brand-teal;
+  }
+
+  /* ── Product card: warm editorial treatment ───────────────────────────
+     A self-contained look for the product card and nothing else: cream
+     surface, letterspaced serif name, bronze accent, hairline chips, square
+     image corners.
+
+     Every value lives on `.product-card` as a custom property rather than in
+     tailwind.config.ts, deliberately. These tones (cream, bronze, warm grey)
+     are NOT part of the site palette — the page is still lavender/lime/ink —
+     and promoting them to tokens would let them leak into surfaces that
+     should stay cool. Change them here, or delete this block to drop the
+     treatment entirely.
+
+     The card is a warm island on a cool page. That contrast is the point: it
+     makes the product read as the object on the shelf rather than as another
+     panel of the page. */
+  .product-card {
+    /*
+     * No surface and no outline — the card sits directly on the page and the
+     * photograph is the only object. Everything below it is bare type.
+     *
+     * The warm tones stayed, but two of them had to be darkened when the cream
+     * went: they were tuned for a #F8F6F1 card, and against the lavender page
+     * the old values failed contrast. `--pc-muted` went #8B8276 → ~3.6:1, and
+     * the bronze #A98950 → ~3.2:1 on the price. Both now clear 4.5:1 on the
+     * page wash while still reading as warm grey and bronze.
+     */
+    --pc-ink: #1c1a17; /* warm near-black */
+    --pc-muted: #6b6354; /* warm grey for meta — 5.9:1 on the page */
+    --pc-accent: #8a6d33; /* bronze — price and stars — 5.0:1 on the page */
+    --pc-rule: #cdc5b4; /* hairline for chips and boxes */
+
+    color: var(--pc-ink);
+  }
+
+  /* Square corners, flush to the card's edges. With no surface behind it the
+     photograph has to be the shape of the card, not a picture mounted on one.
+
+     1:1 rather than the 4:5 it started as — the tall crop made the card very
+     deep in a four-up grid, and the product sits centred in frame so a square
+     loses backdrop rather than product. */
+  .pc-media {
+    @apply relative w-full overflow-hidden;
+    aspect-ratio: 1 / 1;
+    /* Shows only while the image loads, so it is a neutral tint of whatever
+       the card happens to be sitting on rather than a cream block. */
+    background: rgb(0 0 0 / 0.05);
+  }
+
+  /*
+   * Name and price are set in the site face (Quicksand) like everything else.
+   * They were briefly a letterspaced serif, borrowed from the reference comp;
+   * the serif is gone and the tracking with it — Quicksand is a rounded
+   * geometric and opens up badly when it is tracked out, so it wants slightly
+   * negative tracking and weight instead of spacing to carry the emphasis.
+   */
+  /* 16px/600 against the price's 18px/700 — the reference deliberately sets the
+     price heavier and larger than the product name, so money is the first thing
+     read on a card. Don't level them up. */
+  .pc-name {
+    @apply text-[1rem] font-semibold leading-tight tracking-tight;
+    color: var(--pc-ink);
+  }
+
+  /* 18px/700 — the reference's price metric, and the heaviest thing on a card.
+     Uses the shared `price` token so a card, the drawer and the order summary
+     all set money identically. */
+  .pc-price {
+    @apply text-price font-bold;
+    color: var(--pc-accent);
+  }
+
+  /* Uppercase letterspaced meta. Small enough that the tracking is doing the
+     work rather than the size. */
+  .pc-meta {
+    @apply text-label font-semibold uppercase;
+    color: var(--pc-muted);
+  }
+
+  .pc-chip {
+    @apply inline-flex items-center rounded-full border px-3 py-1 text-label font-semibold uppercase;
+    border-color: var(--pc-rule);
+    color: var(--pc-muted);
+  }
+
+  /* The outlined row at the foot of the card. */
+  .pc-box {
+    @apply flex w-full items-center justify-center gap-2 rounded-[3px] border px-3 py-2
+           text-btn font-semibold uppercase transition-colors duration-300;
+    border-color: var(--pc-rule);
+    color: var(--pc-ink);
+  }
+
   /* Image cover wrapper used for reveal masks + hover zoom. */
   .media {
-    @apply relative overflow-hidden bg-mist;
+    @apply relative overflow-hidden rounded-card bg-mist;
   }
   .media img {
     @apply h-full w-full object-cover transition-transform duration-[1200ms] ease-smooth;
   }
   .media:hover img {
-    @apply scale-[1.05];
+    @apply scale-[1.04];
   }
 }
 
@@ -93,6 +515,68 @@
     transform: translateZ(0);
     will-change: transform;
   }
+  /* Figures that must line up column to column. */
+  .figures {
+    @apply font-mono tabular-nums;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/*
+ * ── Focus ring ──────────────────────────────────────────────────────────────
+ * One visible focus ring for every interactive control on the site.
+ *
+ * Twenty controls across the checkout, the auth pages, the header and the
+ * overlays carry Tailwind's `outline-none`, which compiles to
+ * `.outline-none:focus-visible { outline: 2px solid transparent }` — a class
+ * plus a pseudo-class, specificity (0,2,0). A plain `a:focus-visible` is only
+ * (0,1,1) and loses to it, so the obvious version of this rule was silently
+ * cancelled on exactly the controls that needed it most.
+ *
+ * The repeated `:focus-visible` is what fixes that: it costs nothing at
+ * runtime, matches identically, and lifts each selector to (0,2,1) so it wins
+ * on merit rather than with `!important`.
+ *
+ * `[tabindex="-1"]` is excluded on purpose: those are programmatic focus
+ * targets (the skip link's `#main-content` landing point, the menu and search
+ * overlay panels) which are focused on your behalf and should not flash a ring.
+ */
+a:focus-visible:focus-visible,
+button:focus-visible:focus-visible,
+input:focus-visible:focus-visible,
+select:focus-visible:focus-visible,
+textarea:focus-visible:focus-visible,
+summary:focus-visible:focus-visible,
+[tabindex]:not([tabindex='-1']):focus-visible:focus-visible {
+  outline: 2px solid theme('colors.brand.DEFAULT');
+  outline-offset: 2px;
+}
+
+/*
+ * Spotlight product: slow float with a slight tilt, a breathing glow behind it,
+ * and small drifting orbs. All decorative, all stopped under reduced motion
+ * by the global rule above.
+ */
+.spot-float {
+  animation: spotFloat 6s ease-in-out infinite;
+}
+.spot-glow {
+  animation: spotGlow 6s ease-in-out infinite;
+}
+.spot-orb {
+  animation: spotOrb 7s ease-in-out infinite;
+}
+@keyframes spotFloat {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-18px) rotate(1.5deg); }
+}
+@keyframes spotGlow {
+  0%, 100% { transform: scale(0.92); opacity: 0.55; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+@keyframes spotOrb {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(10px, -22px); }
 }
 
 /* Autoplay progress bar for the testimonials carousel. */

@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { brand, products, getProduct, compliance } from '@/lib/content';
+import { brand, products, getProduct, compliance, supply, supplyPricing } from '@/lib/content';
 import { AddToCart } from '@/components/cart/AddToCart';
 import { ProductGallery } from '@/components/products/ProductGallery';
 import { PackageDetailTabs } from '@/components/products/PackageDetailTabs';
 import { JanoshikModal } from '@/components/products/JanoshikModal';
+import { ProductCard } from '@/components/products/ProductCard';
 
 type Params = { params: { slug: string } };
 
@@ -102,7 +103,7 @@ export default function ProductPage({ params }: Params) {
   };
 
   return (
-    <main className="bg-paper pt-28 md:pt-32">
+    <main className="pt-28 md:pt-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -139,18 +140,33 @@ export default function ProductPage({ params }: Params) {
 
           {/* Details column */}
           <div>
-            <p className="text-label font-medium uppercase tracking-[0.12em] text-brand-teal">
-              Compound analysis
+            {/*
+              The strength and format, not a generic "Compound analysis" label.
+              A tracked-out eyebrow that says the same thing above every product
+              carries no information; the strength is what a buyer is actually
+              checking, and setting it in the mono face matches the product card
+              so the two surfaces agree.
+            */}
+            <p className="flex flex-wrap items-baseline gap-x-2.5 text-[0.8125rem]">
+              <span className="figures font-semibold text-brand-teal">{product.strength}</span>
+              <span className="font-normal text-muted">{product.tagline}</span>
             </p>
-            <h1 className="mt-4 text-h1 font-light tracking-tight">{product.name}</h1>
-            <p className="mt-3 text-lead font-light text-muted">{product.blurb}</p>
+            <h1 className="mt-3 t-h1">{product.name}</h1>
+            <p className="mt-3 t-lead text-muted">{product.blurb}</p>
 
             {/* Price */}
-            <div className="mt-6 flex items-baseline gap-3">
-              <span className="text-[2.5rem] font-light leading-none tracking-tight text-brand">
+            <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className="figures text-[2.25rem] font-semibold leading-none text-brand">
                 {usd(product.price)}
               </span>
-              <span className="text-[13px] uppercase tracking-[0.08em] text-muted">USD</span>
+              <span className="text-[0.8125rem] uppercase tracking-[0.08em] text-muted">USD</span>
+              <span className="w-full text-[0.8125rem] font-normal text-muted">
+                Save{' '}
+                <span className="figures font-medium text-brand-teal">
+                  {usd(supplyPricing(product.price).saving)}
+                </span>{' '}
+                per delivery with the {supply.shortName} programme
+              </span>
             </div>
 
             {/* Description */}
@@ -333,7 +349,7 @@ export default function ProductPage({ params }: Params) {
         {/* Related products */}
         <section className="mt-section-sm md:mt-section">
           <div className="flex items-end justify-between border-t border-line pt-8">
-            <h2 className="text-h2 font-light tracking-tight">Related products</h2>
+            <h2 className="t-h2">Related products</h2>
             <Link
               href="/#products"
               className="link-underline hidden text-[14px] font-medium uppercase tracking-[0.08em] text-brand-teal sm:inline-flex"
@@ -342,28 +358,21 @@ export default function ProductPage({ params }: Params) {
             </Link>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+          {/*
+            The real ProductCard, not a bespoke one. This grid used to roll its
+            own card — 16:11 crop, 6px radius, no add-to-bag, price in a
+            different weight — so the same product looked like two different
+            things depending on which page you met it on. It also meant you
+            could add a product to the bag from every rail on the site except
+            the one on its own sibling's page.
+          */}
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((r) => (
-              <Link key={r.slug} href={`/products/${r.slug}`} className="group block">
-                <div className="relative aspect-[16/11] w-full overflow-hidden rounded-[6px] bg-mist">
-                  <Image
-                    src={r.image}
-                    alt={r.name}
-                    fill
-                    sizes="(max-width:640px) 100vw, 33vw"
-                    className="object-cover transition-transform duration-[1200ms] ease-smooth group-hover:scale-105"
-                  />
-                </div>
-                <div className="mt-5 flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="text-h3 font-light tracking-tight transition-colors group-hover:text-brand-teal">
-                      {r.name}
-                    </h3>
-                    <p className="mt-2 text-[15px] text-muted">{r.blurb}</p>
-                  </div>
-                  <span className="mt-1 flex-none text-[18px] font-light text-brand">{usd(r.price)}</span>
-                </div>
-              </Link>
+              <ProductCard
+                key={r.slug}
+                product={r}
+                sizes="(min-width: 1024px) 31vw, (min-width: 640px) 46vw, 92vw"
+              />
             ))}
           </div>
         </section>

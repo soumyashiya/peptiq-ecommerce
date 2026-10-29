@@ -19,11 +19,11 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <main className="bg-paper pt-28 md:pt-32">
+      <main className="pt-28 md:pt-32">
         <div className="frame flex min-h-[60vh] flex-col items-center justify-center py-section-sm text-center">
           <p className="text-label font-medium uppercase tracking-[0.12em] text-brand-teal">Cart</p>
-          <h1 className="mt-3 text-h1 font-light tracking-tight">Your cart is empty</h1>
-          <p className="mt-4 max-w-md text-lead font-light text-muted">
+          <h1 className="mt-3 t-h1">Your cart is empty</h1>
+          <p className="mt-4 max-w-md t-lead text-muted">
             Add a research compound before proceeding to checkout. Products are supplied
             strictly for laboratory research — not for human or veterinary use.
           </p>
@@ -39,7 +39,7 @@ export default function CartPage() {
   }
 
   return (
-    <main className="bg-paper pt-28 md:pt-32">
+    <main className="pt-28 md:pt-32">
       <div className="frame pb-section-sm md:pb-section">
         <nav className="flex items-center gap-2 text-[13px] text-muted">
           <Link href="/" className="transition-colors hover:text-brand-teal">
@@ -49,7 +49,7 @@ export default function CartPage() {
           <span className="text-ink">Cart</span>
         </nav>
         <div className="mt-6 flex items-baseline justify-between">
-          <h1 className="text-h1 font-light tracking-tight">Your cart</h1>
+          <h1 className="t-h1">Your cart</h1>
           <span className="text-[14px] text-muted">
             {count} item{count === 1 ? '' : 's'}
           </span>
